@@ -63,9 +63,9 @@ export default function UserListPage({ title, description, type }) {
               <div>
                 <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{project.category}</p>
                 <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h2>
-                <p className="mt-3 text-sm text-slate-650 dark:text-slate-300 line-clamp-3">{project.summary}</p>
+                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 line-clamp-3">{project.summary}</p>
               </div>
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-850 flex items-center justify-between gap-2">
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div className="flex gap-2">
                   {project.demoUrl && (
                     <Button variant="ghost" to={project.demoUrl} size="sm" icon={FiExternalLink} className="!py-1.5 !px-2.5">

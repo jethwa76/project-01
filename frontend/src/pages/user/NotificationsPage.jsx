@@ -29,6 +29,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     fetchNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMarkRead = async (id) => {
@@ -61,12 +62,12 @@ export default function NotificationsPage() {
                 key={n._id}
                 className={`glass flex gap-4 rounded-lg p-5 transition ${
                   n.read
-                    ? "opacity-75 border-slate-100 dark:border-slate-850 bg-slate-50/50"
+                    ? "opacity-75 border-slate-100 dark:border-slate-800 bg-slate-50/50"
                     : "border-primary/30 dark:border-primary/20 bg-primary/5 dark:bg-primary/5"
                 }`}
               >
                 <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${
-                  n.read ? "bg-slate-150 text-slate-500" : "bg-primary text-white"
+                  n.read ? "bg-slate-200 text-slate-500" : "bg-primary text-white"
                 }`}>
                   <Icon size={18} />
                 </span>
@@ -86,7 +87,7 @@ export default function NotificationsPage() {
                       </button>
                     )}
                   </div>
-                  <p className="mt-1.5 text-sm leading-6 text-slate-605 dark:text-slate-350">
+                  <p className="mt-1.5 text-sm leading-6 text-slate-600 dark:text-slate-400">
                     {n.body}
                   </p>
                 </div>

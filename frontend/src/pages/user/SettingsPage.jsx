@@ -23,7 +23,7 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-bold text-slate-950 dark:text-white">Settings</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid max-w-lg gap-4 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
         <div>
-          <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Current Password</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Current Password</label>
           <input
             className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
             type="password"
@@ -33,7 +33,7 @@ export default function SettingsPage() {
           {errors.currentPassword && <p className="mt-1 text-xs text-red-500">{errors.currentPassword.message}</p>}
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">New Password</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">New Password</label>
           <input
             className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
             type="password"

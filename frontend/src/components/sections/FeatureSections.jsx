@@ -21,7 +21,7 @@ export function AboutSection({ profile }) {
           <p className="text-sm font-bold uppercase tracking-widest text-secondary">About</p>
           <h2 className="mt-3 text-4xl font-bold text-slate-950 dark:text-white">{heading}</h2>
         </div>
-        <div className="space-y-5 text-lg leading-8 text-slate-655 dark:text-slate-300">
+        <div className="space-y-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
           <p>{bioText}</p>
           {profile?.headline && (
             <p className="text-base font-semibold text-primary">
@@ -65,7 +65,7 @@ export function ProjectsSection({ projects = [] }) {
             <article key={project._id || project.title} className="group rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-soft dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
               <div>
                 <div className="mb-5 h-36 rounded-lg bg-gradient-to-br from-primary to-slate-950" />
-                <p className="text-sm font-semibold text-secondary uppercase tracking-wider text-xs">{project.category}</p>
+                <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{project.category}</p>
                 <h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-3">{project.summary}</p>
               </div>
@@ -172,7 +172,7 @@ export function CertificatesSection({ certificates = [] }) {
                 {cert.credentialId && <p className="mt-1 text-xs text-slate-400">ID: {cert.credentialId}</p>}
               </div>
               {cert.credentialUrl && (
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-850">
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-primary hover:underline">
                     Verify Credential
                   </a>

@@ -115,6 +115,7 @@ export default function ManageResource({ type }) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   // Client-side search
@@ -269,7 +270,7 @@ export default function ManageResource({ type }) {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditOpen(row)}
-                            className="focus-ring rounded-lg p-2 text-primary hover:bg-slate-100 dark:hover:bg-slate-850"
+                            className="focus-ring rounded-lg p-2 text-primary hover:bg-slate-100 dark:hover:bg-slate-800"
                             aria-label="Edit record"
                           >
                             <FiEdit3 />
@@ -313,7 +314,7 @@ export default function ManageResource({ type }) {
               {type === "users" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Name</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Name</label>
                     <input
                       name="name"
                       value={formData.name || ""}
@@ -323,7 +324,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Email</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Email</label>
                     <input
                       name="email"
                       value={formData.email || ""}
@@ -334,7 +335,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Role</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Role</label>
                     <select
                       name="role"
                       value={formData.role || "user"}
@@ -352,7 +353,7 @@ export default function ManageResource({ type }) {
               {type === "projects" && (
                 <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Title</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Title</label>
                     <input
                       name="title"
                       value={formData.title || ""}
@@ -363,7 +364,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Category</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Category</label>
                       <input
                         name="category"
                         value={formData.category || ""}
@@ -373,7 +374,7 @@ export default function ManageResource({ type }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Status</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Status</label>
                       <select
                         name="status"
                         value={formData.status || "published"}
@@ -387,7 +388,7 @@ export default function ManageResource({ type }) {
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Summary</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Summary</label>
                     <input
                       name="summary"
                       value={formData.summary || ""}
@@ -397,7 +398,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Description</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Description</label>
                     <textarea
                       name="description"
                       value={formData.description || ""}
@@ -408,7 +409,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Tags (comma separated)</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Tags (comma separated)</label>
                       <input
                         name="tags"
                         value={formData.tags || ""}
@@ -418,7 +419,7 @@ export default function ManageResource({ type }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Technologies (comma separated)</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Technologies (comma separated)</label>
                       <input
                         name="technologies"
                         value={formData.technologies || ""}
@@ -430,7 +431,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Demo URL</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Demo URL</label>
                       <input
                         name="demoUrl"
                         value={formData.demoUrl || ""}
@@ -440,7 +441,7 @@ export default function ManageResource({ type }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Repo URL</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Repo URL</label>
                       <input
                         name="repoUrl"
                         value={formData.repoUrl || ""}
@@ -470,7 +471,7 @@ export default function ManageResource({ type }) {
               {type === "skills" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Name</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Name</label>
                     <input
                       name="name"
                       value={formData.name || ""}
@@ -480,7 +481,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Category</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Category</label>
                     <input
                       name="category"
                       value={formData.category || ""}
@@ -492,7 +493,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Level (0-100%)</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Level (0-100%)</label>
                       <input
                         name="level"
                         type="number"
@@ -505,7 +506,7 @@ export default function ManageResource({ type }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Color Tag</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Color Tag</label>
                       <div className="mt-1 flex items-center gap-2">
                         <input
                           name="color"
@@ -530,7 +531,7 @@ export default function ManageResource({ type }) {
               {type === "certificates" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Title</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Title</label>
                     <input
                       name="title"
                       value={formData.title || ""}
@@ -540,7 +541,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Issuer</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Issuer</label>
                     <input
                       name="issuer"
                       value={formData.issuer || ""}
@@ -550,7 +551,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Credential ID</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Credential ID</label>
                     <input
                       name="credentialId"
                       value={formData.credentialId || ""}
@@ -559,7 +560,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Credential URL</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Credential URL</label>
                     <input
                       name="credentialUrl"
                       value={formData.credentialUrl || ""}
@@ -569,7 +570,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Issued Date</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Issued Date</label>
                     <input
                       name="issuedAt"
                       type="date"
@@ -585,33 +586,33 @@ export default function ManageResource({ type }) {
               {type === "messages" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Sender Name</label>
-                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-350">
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Sender Name</label>
+                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-400">
                       {formData.name}
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Sender Email</label>
-                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-350">
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Sender Email</label>
+                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-400">
                       <a href={`mailto:${formData.email}`} className="text-primary hover:underline">
                         {formData.email}
                       </a>
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Subject</label>
-                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-750 dark:text-slate-300 font-medium">
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Subject</label>
+                    <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-300 font-medium">
                       {formData.subject}
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Message Body</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Message Body</label>
                     <p className="mt-1 rounded-lg bg-slate-50 dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-6">
                       {formData.message}
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Status</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Status</label>
                     <select
                       name="status"
                       value={formData.status || "new"}
@@ -630,7 +631,7 @@ export default function ManageResource({ type }) {
               {type === "blogs" && (
                 <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Title</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Title</label>
                     <input
                       name="title"
                       value={formData.title || ""}
@@ -640,7 +641,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Status</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Status</label>
                     <select
                       name="status"
                       value={formData.status || "published"}
@@ -652,7 +653,7 @@ export default function ManageResource({ type }) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Excerpt</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Excerpt</label>
                     <input
                       name="excerpt"
                       value={formData.excerpt || ""}
@@ -662,7 +663,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Body</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Body</label>
                     <textarea
                       name="body"
                       value={formData.body || ""}
@@ -672,7 +673,7 @@ export default function ManageResource({ type }) {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Tags (comma separated)</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Tags (comma separated)</label>
                     <input
                       name="tags"
                       value={formData.tags || ""}
@@ -688,7 +689,7 @@ export default function ManageResource({ type }) {
               {type === "testimonials" && (
                 <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Name</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Name</label>
                     <input
                       name="name"
                       value={formData.name || ""}
@@ -699,7 +700,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Role</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Role</label>
                       <input
                         name="role"
                         value={formData.role || ""}
@@ -708,7 +709,7 @@ export default function ManageResource({ type }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Company</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Company</label>
                       <input
                         name="company"
                         value={formData.company || ""}
@@ -718,7 +719,7 @@ export default function ManageResource({ type }) {
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Quote</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Quote</label>
                     <textarea
                       name="quote"
                       value={formData.quote || ""}
@@ -729,7 +730,7 @@ export default function ManageResource({ type }) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Rating (1-5)</label>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Rating (1-5)</label>
                       <select
                         name="rating"
                         value={formData.rating || 5}

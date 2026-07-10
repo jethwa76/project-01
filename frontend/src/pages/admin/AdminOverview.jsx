@@ -62,7 +62,7 @@ function Panel({ title, items = [] }) {
       <h2 className="font-bold text-slate-950 dark:text-white">{title}</h2>
       <div className="mt-4 grid gap-3">
         {(items.length ? items : ["No records yet"]).map((item) => (
-          <p key={item} className="rounded-lg bg-slate-50 p-3 text-sm text-slate-650 dark:bg-slate-950 dark:text-slate-350">{item}</p>
+          <p key={item} className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-950 dark:text-slate-400">{item}</p>
         ))}
       </div>
     </article>

@@ -91,7 +91,7 @@ export default function ProjectsPage() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="bg-transparent text-sm outline-none text-slate-850 dark:text-slate-200"
+                className="bg-transparent text-sm outline-none text-slate-800 dark:text-slate-200"
                 placeholder="Search projects"
                 aria-label="Search projects"
               />
@@ -109,7 +109,7 @@ export default function ProjectsPage() {
                 return (
                   <article key={project._id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
                     <div>
-                      <div className="mb-5 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-650" />
+                      <div className="mb-5 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-600" />
                       <div className="flex justify-between items-start">
                         <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{project.category}</p>
                         {user && (
@@ -119,7 +119,7 @@ export default function ProjectsPage() {
                               className={`focus-ring p-1.5 rounded-lg border transition ${
                                 saved
                                   ? "border-primary bg-primary/10 text-primary"
-                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-750"
+                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
                               }`}
                               title={saved ? "Remove from saved" : "Save project"}
                             >
@@ -130,7 +130,7 @@ export default function ProjectsPage() {
                               className={`focus-ring p-1.5 rounded-lg border transition ${
                                 favorited
                                   ? "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-500"
-                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-750"
+                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
                               }`}
                               title={favorited ? "Remove from favorites" : "Favorite project"}
                             >
@@ -140,9 +140,9 @@ export default function ProjectsPage() {
                         )}
                       </div>
                       <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h2>
-                      <p className="mt-3 text-sm leading-6 text-slate-650 dark:text-slate-300">{project.summary}</p>
+                      <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{project.summary}</p>
                     </div>
-                    <div className="mt-6 pt-4 border-t border-slate-105 dark:border-slate-850 flex gap-2">
+                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
                       {project.demoUrl && (
                         <Button variant="outline" to={project.demoUrl} icon={FiExternalLink}>
                           Demo

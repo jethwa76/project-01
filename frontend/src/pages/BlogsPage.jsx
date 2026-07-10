@@ -44,7 +44,7 @@ export default function BlogsPage() {
                     {blog.coverImage?.url ? (
                       <img src={blog.coverImage.url} alt={blog.title} className="mb-4 h-40 w-full rounded-lg object-cover" />
                     ) : (
-                      <div className="mb-4 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-650" />
+                      <div className="mb-4 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-600" />
                     )}
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {(blog.tags || []).map((tag) => (
@@ -54,7 +54,7 @@ export default function BlogsPage() {
                       ))}
                     </div>
                     <h2 className="text-xl font-bold text-slate-950 dark:text-white">{blog.title}</h2>
-                    <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-350">{blog.excerpt}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{blog.excerpt}</p>
                   </div>
                   <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex justify-between items-center">
                     <span>By {blog.author?.name || "Portfolio Admin"}</span>

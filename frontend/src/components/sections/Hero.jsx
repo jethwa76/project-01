@@ -17,7 +17,7 @@ export default function Hero({ profile }) {
           <h1 className="max-w-4xl text-4xl font-extrabold leading-tight text-slate-950 dark:text-white sm:text-6xl">
             {titleText}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-650 dark:text-slate-300">
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
             {bioText}
           </p>
           {profile?.website && (

@@ -150,3 +150,6 @@ For details on configuration, database entity models, and API definitions, check
 - **HTTP Security Headers:** Hardened through `helmet` middleware.
 - **CORS Protection:** Restricts frontend credentials and origins appropriately.
 - **Cookie Security:** JWT stored securely using `httpOnly`, secure flag, and sameSite properties.
+
+
+build with harsh jethwa | 15/07/2026 |  2:00 AM | 
