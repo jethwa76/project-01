@@ -92,34 +92,20 @@ export function SkillsTimelineSection({ skills = [] }) {
 
   return (
     <section className="section">
-      <div className="container-page grid gap-12 lg:grid-cols-2">
-        <div>
-          <SectionHeading eyebrow="Skills" title="Technical depth" />
-          <div className="space-y-5">
-            {displaySkills.map((skill) => (
-              <div key={skill._id || skill.name}>
-                <div className="mb-2 flex justify-between text-sm font-semibold">
-                  <span>{skill.name}</span>
-                  <span>{skill.level}%</span>
-                </div>
-                <div className="h-3 rounded-full bg-slate-200 dark:bg-slate-800">
-                  <div className="h-3 rounded-full bg-gradient-to-r from-primary to-secondary" style={{ width: `${skill.level}%` }} />
-                </div>
+      <div className="container-page max-w-3xl">
+        <SectionHeading eyebrow="Skills" title="Technical depth" />
+        <div className="space-y-5">
+          {displaySkills.map((skill) => (
+            <div key={skill._id || skill.name}>
+              <div className="mb-2 flex justify-between text-sm font-semibold">
+                <span>{skill.name}</span>
+                <span>{skill.level}%</span>
               </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <SectionHeading eyebrow="Experience" title="Education and work" />
-          <div className="space-y-4">
-            {timeline.map((item) => (
-              <article key={item.title} className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                <p className="text-sm font-bold text-accent">{item.year}</p>
-                <h3 className="mt-1 font-bold text-slate-950 dark:text-white">{item.title}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">{item.meta}</p>
-              </article>
-            ))}
-          </div>
+              <div className="h-3 rounded-full bg-slate-200 dark:bg-slate-800">
+                <div className="h-3 rounded-full bg-gradient-to-r from-primary to-secondary" style={{ width: `${skill.level}%` }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -7,8 +7,6 @@ import PageShell from "../components/layout/PageShell";
 import Loader from "../components/common/Loader";
 import {
   AboutSection,
-  CertificatesSection,
-  ProjectsSection,
   ServicesSection,
   SkillsTimelineSection,
   TestimonialsSection
@@ -77,9 +75,7 @@ export default function LandingPage() {
         <Hero profile={profile} />
         <AboutSection profile={profile} />
         <ServicesSection />
-        <ProjectsSection projects={projects} />
         <SkillsTimelineSection skills={skills} />
-        <CertificatesSection certificates={certificates} />
         <TestimonialsSection testimonials={testimonials} />
         <section id="contact" className="section bg-white/70 dark:bg-slate-950/40">
           <div className="container-page">

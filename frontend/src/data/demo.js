@@ -1,19 +1,5 @@
 export const featuredProjects = [
   {
-    title: "LaunchOps Dashboard",
-    summary: "Signal-rich analytics for launch readiness, project health, and customer feedback loops.",
-    category: "SaaS Analytics",
-    technologies: ["React", "Node", "MongoDB"],
-    accent: "#2563EB"
-  },
-  {
-    title: "Craft Portfolio",
-    summary: "A polished portfolio CMS with case studies, blog publishing, and contact capture.",
-    category: "Portfolio CMS",
-    technologies: ["Vite", "Express", "Cloudinary"],
-    accent: "#14B8A6"
-  },
-  {
     title: "Talent Signal Hub",
     summary: "Recruiter-friendly project profiles with achievements, skills, and measurable impact.",
     category: "Career Platform",

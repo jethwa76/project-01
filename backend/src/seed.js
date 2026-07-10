@@ -36,24 +36,14 @@ await Skill.insertMany([
 
 await Project.insertMany([
   {
-    title: "LaunchOps Dashboard",
-    summary: "Analytics dashboard for launch readiness and customer signal tracking.",
-    description: "A full-stack product intelligence dashboard with role-based workspaces, charts, and team workflows.",
-    category: "SaaS",
-    tags: ["analytics", "dashboard", "saas"],
-    technologies: ["React", "Node.js", "MongoDB"],
+    title: "Talent Signal Hub",
+    summary: "Recruiter-friendly project profiles with achievements, skills, and measurable impact.",
+    description: "A secure, role-based platform that turns candidate experience into verified talent signals.",
+    category: "Career Platform",
+    tags: ["recruitment", "portfolio", "verification"],
+    technologies: ["JWT", "Tailwind", "Mongoose"],
     demoUrl: "https://example.com",
-    repoUrl: "https://github.com/example/launchops",
-    featured: true,
-    owner: admin._id
-  },
-  {
-    title: "Craft Portfolio",
-    summary: "Responsive portfolio engine with blogs, project cases, and contact capture.",
-    description: "A polished portfolio and content platform built for creators and software professionals.",
-    category: "Portfolio",
-    tags: ["portfolio", "blog", "cms"],
-    technologies: ["Vite", "Express", "Cloudinary"],
+    repoUrl: "https://github.com/example/talentsignal",
     featured: true,
     owner: admin._id
   }
@@ -74,13 +64,7 @@ await Testimonial.create({
   rating: 5
 });
 
-await Blog.create({
-  title: "Designing Portfolio Systems That Recruit While You Sleep",
-  excerpt: "How to turn projects, writing, and outcomes into a coherent technical brand.",
-  body: "A strong portfolio is not a gallery. It is a product surface for trust. Show decisions, constraints, tradeoffs, and measurable outcomes.",
-  tags: ["portfolio", "career", "design"],
-  author: admin._id
-});
+
 
 console.log("Database seeded. Admin login: admin@example.com / Password123!");
 await mongoose.disconnect();

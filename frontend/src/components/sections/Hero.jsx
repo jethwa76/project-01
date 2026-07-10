@@ -20,18 +20,10 @@ export default function Hero({ profile }) {
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
             {bioText}
           </p>
-          {profile?.website && (
-            <p className="mt-2 text-sm text-slate-500">
-              Website: <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website}</a>
-              {profile.location && ` • Location: ${profile.location}`}
-            </p>
-          )}
+
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button to="/projects" icon={FiArrowRight}>
               Explore projects
-            </Button>
-            <Button variant="outline" to="/resume.pdf" icon={FiDownload}>
-              Resume
             </Button>
           </div>
         </motion.div>
@@ -53,7 +45,7 @@ export default function Hero({ profile }) {
               </button>
             </div>
             <div className="grid gap-3">
-              {["LaunchOps Dashboard", "Craft Portfolio", "Talent Signal Hub"].map((item, index) => (
+              {["Talent Signal Hub", "API Gateway Integration", "Database Health Insights"].map((item, index) => (
                 <div key={item} className="rounded-lg bg-white/8 p-4">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">{item}</span>

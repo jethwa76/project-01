@@ -1,10 +1,9 @@
-import { FiGithub, FiLinkedin, FiMail, FiTwitter } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
 
 const socials = [
   { label: "GitHub", icon: FiGithub, href: "https://github.com" },
-  { label: "LinkedIn", icon: FiLinkedin, href: "https://linkedin.com" },
-  { label: "Twitter", icon: FiTwitter, href: "https://twitter.com" },
-  { label: "Email", icon: FiMail, href: "mailto:hello@example.com" }
+  { label: "LinkedIn", icon: FiLinkedin, href: "https://www.linkedin.com/in/harsh-jethwa-a2020531b/" },
+  { label: "Email", icon: FiMail, href: "mailto:harshyjethwa2020@gmail.com" }
 ];
 
 export default function Footer() {

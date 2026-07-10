@@ -1,155 +1,278 @@
-# ShowcasePro - Full-Stack Portfolio Showcase Platform
+<div align="center">
 
-An immersive, premium portfolio and content engine designed for engineers and creators to display their projects, blogs, credentials, and skills. Built with a robust **Node.js/Express** backend, a responsive **React (Vite) + Tailwind CSS** frontend, and a secure **MongoDB** database.
+# ✨ ShowcasePro
 
----
+### A Full-Stack Portfolio Showcase Platform
 
-## 🚀 Key Features
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6+-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![License](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
 
-### 💻 Frontend (React + Vite)
-- **Modern User Experience:** Smooth micro-interactions and transitions powered by **Framer Motion**.
-- **Interactive Showcases:** Advanced searching, filtering, sorting, and pagination for projects and blogs.
-- **Admin Dashboard:** Full-featured resource manager to manage projects, blogs, testimonials, certificates, and skills directly from the browser.
-- **Contact Forms:** Direct client message submittal with built-in validation.
-- **User Center:** Features like saved/favorited projects, comments on blogs, customized settings, and a user notification tray.
+An immersive, premium portfolio and content engine designed for engineers and creators to showcase projects, skills, and credentials — with a full admin dashboard, authentication system, and contact management.
 
-### ⚙️ Backend (Express + MongoDB)
-- **Robust Authentication:** Secure JWT-based authentication using HTTP-only cookies and bcrypt password hashing.
-- **Media Management:** Direct, secure image uploads via **Cloudinary** integration.
-- **Comprehensive Security Suite:** Implements API rate limiting, CORS configuration, XSS protection, MongoDB query sanitization, parameter pollution protection (HPP), and custom security headers via **Helmet**.
-- **API Architecture:** RESTful structure with specialized middleware for roles (Admin vs. User) and schema validation using `express-validator`.
-- **Database Seeding:** Preconfigured script to seed the database with mock user, skill, project, and blog data.
+[🚀 Getting Started](#-getting-started) · [📸 Screenshots](#-screenshots) · [✨ Features](#-features) · [🏗️ Architecture](#️-architecture) · [📚 Docs](#-documentation)
+
+</div>
 
 ---
 
-## 🛠️ Tech Stack
+## 📸 Screenshots
 
-- **Frontend:** React (v19), Vite, Tailwind CSS, React Router DOM, React Hook Form, React Icons, Axios, Framer Motion.
-- **Backend:** Node.js, Express, Mongoose (MongoDB), Multer, Cloudinary, JWT, Nodemailer, Bcryptjs, Morgan, Compression.
-- **Dev Tools:** ESLint, Nodemon, Concurrently.
+<div align="center">
+<table>
+<tr>
+<td align="center"><b>🏠 Landing Page</b></td>
+<td align="center"><b>📂 Projects</b></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/landing.png" alt="Landing Page" width="400"/></td>
+<td><img src="docs/screenshots/projects.png" alt="Projects Page" width="400"/></td>
+</tr>
+<tr>
+<td align="center"><b>📝 Blog</b></td>
+<td align="center"><b>🔐 Login</b></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/blog.png" alt="Blog Page" width="400"/></td>
+<td><img src="docs/screenshots/login.png" alt="Login Page" width="400"/></td>
+</tr>
+</table>
+</div>
+
+> 💡 **Tip:** Add your own screenshots to `docs/screenshots/` to showcase your deployment!
 
 ---
 
-## 📁 Repository Structure
+## ✨ Features
 
-```text
-├── backend/                  # Express REST API
+<table>
+<tr>
+<td width="50%">
+
+### 🎨 Frontend
+- ⚡ **Blazing fast** — Vite + React 19
+- 🎬 **Smooth animations** — Framer Motion
+- 🔍 **Search & filter** — Projects and blogs
+- 📱 **Fully responsive** — Mobile-first design
+- 🌙 **Dark mode** — System-aware theming
+- 📝 **Contact forms** — Built-in validation
+- 🔔 **Notifications** — Real-time user alerts
+- ❤️ **Save & Favorite** — Bookmark projects
+
+</td>
+<td width="50%">
+
+### ⚙️ Backend
+- 🔐 **JWT Auth** — HTTP-only cookie sessions
+- 🛡️ **Enterprise security** — Helmet, CORS, rate limiting
+- 🖼️ **Cloudinary** — Managed image uploads
+- 📊 **RESTful API** — Clean controller/route architecture
+- 🗄️ **MongoDB + Mongoose** — Schema validation & indexing
+- 📧 **Email support** — Nodemailer integration
+- 🧪 **Auto-seeding** — Dev-ready in-memory MongoDB fallback
+- 👮 **Role-based access** — Admin & User permissions
+
+</td>
+</tr>
+</table>
+
+### 🛠️ Admin Dashboard
+> Manage your entire portfolio from a single, clean interface:
+> - ➕ Create / ✏️ Edit / 🗑️ Delete — **Projects**, **Blogs**, **Skills**, **Certificates**, **Testimonials**
+> - 📬 View and manage **contact messages** with status tracking
+> - 👥 **User management** with role assignment
+
+---
+
+## 🏗️ Architecture
+
+```
+📦 ShowcasePro
+├── 🖥️  frontend/                React SPA (Vite + Tailwind)
 │   ├── src/
-│   │   ├── config/           # Database config & env loader
-│   │   ├── controllers/      # Route handler logic
-│   │   ├── middleware/       # Auth, role-checks, rate-limiting, error handlers
-│   │   ├── models/           # Mongoose schemas
-│   │   ├── routes/           # Express routers
-│   │   ├── utils/            # Helper functions (email, upload)
-│   │   ├── validators/       # Input schemas and validation
-│   │   ├── app.js            # Express app entry definition
-│   │   ├── seed.js           # Database seeding script
-│   │   └── server.js         # Port listener / entry point
-│   ├── .env.example          # Environment variables template
+│   │   ├── api/                Axios HTTP client
+│   │   ├── components/         Reusable UI components
+│   │   │   ├── common/         Buttons, Loaders, Modals
+│   │   │   ├── layout/         Navbar, Footer, PageShell
+│   │   │   └── sections/       Hero, Features, Testimonials
+│   │   ├── context/            Auth, Theme, Toast providers
+│   │   ├── data/               Demo/fallback data
+│   │   ├── pages/              Route-level views
+│   │   │   ├── admin/          Dashboard, ManageResource
+│   │   │   └── user/           Settings, Notifications, Lists
+│   │   ├── styles/             Global CSS + Tailwind config
+│   │   ├── App.jsx             Router & layout
+│   │   └── main.jsx            Entry point
 │   └── package.json
 │
-├── frontend/                 # React Single Page App
+├── ⚙️  backend/                 Express REST API
 │   ├── src/
-│   │   ├── api/              # Axios client and API methods
-│   │   ├── components/       # Shared UI components
-│   │   ├── context/          # State management (Auth, Theme, Toast)
-│   │   ├── pages/            # View components (Public, User, Admin)
-│   │   ├── styles/           # Global styles and tailwind directives
-│   │   ├── App.jsx           # Main routing entry
-│   │   └── main.jsx          # React app DOM render point
-│   ├── .env.example          # Frontend configuration template
-│   ├── tailwind.config.js    # Tailwind layout customizations
+│   │   ├── config/             Database & environment
+│   │   ├── controllers/        Business logic handlers
+│   │   ├── middleware/         Auth, security, error handling
+│   │   ├── models/             Mongoose schemas
+│   │   ├── routes/             API route definitions
+│   │   ├── utils/              Email, file upload helpers
+│   │   ├── validators/         Request validation schemas
+│   │   ├── app.js              Express app configuration
+│   │   ├── seed.js             Database seeding script
+│   │   └── server.js           Server entry point
+│   ├── .env.example            Environment template
 │   └── package.json
 │
-├── docs/                     # Extended technical documentation
-│   ├── API.md                # Endpoint specs and schema query params
-│   ├── ARCHITECTURE.md       # Diagrammed frontend/backend system architecture
-│   ├── DATABASE.md           # Mongoose collection models and ER relationships
-│   └── DEPLOYMENT.md         # Production setup for Render, Vercel & Atlas
+├── 📖 docs/                     Extended documentation
+│   ├── API.md                  REST endpoint specs
+│   ├── ARCHITECTURE.md         System design diagrams
+│   ├── DATABASE.md             ER models & schemas
+│   └── DEPLOYMENT.md           Production deploy guide
 │
-├── package.json              # Workspace-wide commands
-└── README.md                 # Project starter guide (This file)
+├── package.json                Monorepo workspace scripts
+└── README.md                   ← You are here
 ```
 
 ---
 
-## ⚙️ Local Development Setup
+## 🛡️ Tech Stack
 
-Follow these steps to run the frontend and backend concurrently on your local machine:
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 19, Vite 6, Tailwind CSS 3.4, React Router DOM, React Hook Form, Framer Motion, Axios, React Icons |
+| **Backend** | Node.js, Express 4, Mongoose, JWT (jsonwebtoken), Bcryptjs, Multer, Cloudinary, Nodemailer, Morgan |
+| **Security** | Helmet, CORS, express-rate-limit, express-mongo-sanitize, HPP |
+| **Database** | MongoDB (Atlas / Local / In-Memory fallback) |
+| **Dev Tools** | Nodemon, Concurrently, ESLint, Vite HMR |
 
-### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- A running [MongoDB](https://www.mongodb.com/) instance (local or MongoDB Atlas connection string)
-- A [Cloudinary](https://cloudinary.com/) account for image storage
+---
 
-### 2. Installation
-Clone the repository and run the installation script at the workspace root to install dependencies for both the frontend and backend:
+## 🚀 Getting Started
+
+### Prerequisites
+
+| Tool | Version | Required |
+|------|---------|----------|
+| [Node.js](https://nodejs.org/) | v18+ | ✅ Yes |
+| [MongoDB](https://www.mongodb.com/) | v6+ | ⚠️ Optional (auto-fallback to in-memory) |
+| [Cloudinary](https://cloudinary.com/) | — | ⚠️ Optional (for image uploads) |
+
+### 1️⃣ Clone & Install
 
 ```bash
-# Install root, backend, and frontend dependencies
+git clone https://github.com/your-username/showcasepro.git
+cd showcasepro
+
+# Install all dependencies (root + backend + frontend)
 npm run install:all
 ```
 
-### 3. Environment Configuration
+### 2️⃣ Configure Environment
 
-#### Backend Setup
-Create a `.env` file in the `backend/` directory by copying `.env.example`:
-
+**Backend** — create `backend/.env`:
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-Open `backend/.env` and update the variables:
-- `MONGO_URI`: Your MongoDB connection string.
-- `JWT_SECRET`: A long, complex random string.
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Credentials from your Cloudinary console.
+```env
+NODE_ENV=development
+PORT=5000
+JWT_SECRET=your-super-secret-key-change-this
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=http://localhost:5173
 
-#### Frontend Setup
-Create a `.env` file in the `frontend/` directory by copying `.env.example`:
+# Optional — leave blank to use in-memory MongoDB
+MONGO_URI=mongodb://127.0.0.1:27017/portfolio_showcase
 
+# Optional — only needed for image uploads
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+**Frontend** — create `frontend/.env`:
 ```bash
 cp frontend/.env.example frontend/.env
 ```
 
-Open `frontend/.env` and verify the settings:
-- `VITE_API_URL`: Points to your local backend API (default is `http://localhost:5000/api`).
-
-### 4. Database Seeding
-Populate the database with initial categories, a default administrator account, and sample showcase entries:
-
-```bash
-cd backend
-npm run seed
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_APP_NAME=ShowcasePro
 ```
-*Note: This deletes any existing collections and creates a default administrator: **admin@example.com** with password **Password123!**.*
 
-### 5. Running the Application
-Return to the root directory and start the unified development server:
+### 3️⃣ Start Development Server
 
 ```bash
-# Runs frontend (on port 5173) and backend (on port 5000) concurrently
 npm run dev
 ```
 
+This launches both servers concurrently:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | `http://localhost:5173` | React app with HMR |
+| Backend | `http://localhost:5000` | Express API server |
+
+> 🎉 **That's it!** The app auto-seeds demo data on first launch when using in-memory MongoDB.
+
+### 4️⃣ Default Admin Login
+
+```
+📧 Email:    admin@example.com
+🔑 Password: Password123!
+```
+
 ---
 
-## 📚 Technical Documentation & Guides
+## 🔒 Security
 
-For details on configuration, database entity models, and API definitions, check the documentation files:
-- **System Flowcharts:** [Architecture Guide](./docs/ARCHITECTURE.md)
-- **DB Relationships:** [Database & ER Schema](./docs/DATABASE.md)
-- **REST Endpoints & Parameters:** [API Documentation](./docs/API.md)
-- **Production Setup Checklist:** [Deployment Instructions](./docs/DEPLOYMENT.md)
+| Protection | Implementation |
+|-----------|---------------|
+| **Data Sanitization** | `express-mongo-sanitize` — blocks NoSQL injection |
+| **HTTP Headers** | `helmet` — sets secure response headers |
+| **Rate Limiting** | `express-rate-limit` — prevents DDoS & brute force |
+| **CORS** | Strict origin + credentials policy |
+| **Cookie Security** | `httpOnly`, `secure`, `sameSite` flags on JWT tokens |
+| **Password Hashing** | `bcryptjs` with salt rounds |
+| **Input Validation** | `express-validator` schemas on all routes |
 
 ---
 
-## 🔒 Security Measures
-- **Data Sanitization:** Protects against NoSQL query injections.
-- **XSS Prevention:** Filters user inputs to neutralize malicious script injections.
-- **Rate Limiting:** Protects endpoints from DDoS and brute force credential attacks.
-- **HTTP Security Headers:** Hardened through `helmet` middleware.
-- **CORS Protection:** Restricts frontend credentials and origins appropriately.
-- **Cookie Security:** JWT stored securely using `httpOnly`, secure flag, and sameSite properties.
+## 📚 Documentation
 
+| Document | Description |
+|----------|-------------|
+| [📐 Architecture](./docs/ARCHITECTURE.md) | System design, data flow diagrams |
+| [🗄️ Database Schema](./docs/DATABASE.md) | Mongoose models, ER relationships |
+| [🔌 API Reference](./docs/API.md) | All REST endpoints with parameters |
+| [🚀 Deployment](./docs/DEPLOYMENT.md) | Production setup (Render, Vercel, Atlas) |
 
-build with harsh jethwa | 15/07/2026 |  2:00 AM | 
+---
+
+## 📜 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start frontend + backend concurrently |
+| `npm run install:all` | Install dependencies for all packages |
+| `cd backend && npm run seed` | Seed database with demo data |
+| `cd backend && npm run dev` | Start only the backend (port 5000) |
+| `cd frontend && npm run dev` | Start only the frontend (port 5173) |
+| `cd frontend && npm run build` | Production build of the frontend |
+
+---
+
+<div align="center">
+
+## 🤝 Connect
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Harsh_Jethwa-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/harsh-jethwa-a2020531b/)
+[![Email](https://img.shields.io/badge/Email-harshyjethwa2020@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:harshyjethwa2020@gmail.com)
+
+---
+
+**Built with Harsh Jethwa**
+
+<sub>© 2026 ShowcasePro. All rights reserved.</sub>
+
+</div>
