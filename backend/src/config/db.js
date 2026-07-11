@@ -34,12 +34,13 @@ async function seedIfEmpty() {
       name: "Jane Doe",
       email: "jane@example.com",
       password: "Password123!",
-      role: "user",
+      role: "visitor",
       headline: "Frontend UI/UX Developer",
       bio: "Passionate about creating accessible, beautiful and high-performing web interfaces.",
       location: "New York, NY",
       website: "https://janedoe.com"
     });
+
 
     const skills = await Skill.create([
       { name: "React / Next.js", category: "Frontend", level: 94, color: "#2563EB" },

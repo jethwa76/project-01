@@ -8,7 +8,9 @@ const skillSchema = new mongoose.Schema(
     icon: String,
     color: String,
     order: { type: Number, default: 0 },
-    visible: { type: Boolean, default: true }
+    visible: { type: Boolean, default: true },
+    yearsOfExperience: { type: Number, min: 0, default: 0 },
+    certificateUrl: String
   },
   { timestamps: true }
 );

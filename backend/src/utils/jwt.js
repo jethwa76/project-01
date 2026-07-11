@@ -16,10 +16,12 @@ export function signAccessToken(userId) {
  * Sign a long-lived refresh token (default 7d, 30d for remember-me).
  */
 export function signRefreshToken(userId, rememberMe = false) {
-  return jwt.sign({ id: userId, type: "refresh" }, env.jwtRefreshSecret, {
+  const jti = crypto.randomBytes(16).toString("hex");
+  return jwt.sign({ id: userId, type: "refresh", jti }, env.jwtRefreshSecret, {
     expiresIn: rememberMe ? env.jwtRememberMeExpiresIn : env.jwtRefreshExpiresIn
   });
 }
+
 
 /**
  * Parse a user-agent string into device/browser/OS info.
