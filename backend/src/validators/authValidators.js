@@ -18,3 +18,13 @@ export const passwordResetRules = [
 export const forgotPasswordRules = [
   body("email").isEmail().normalizeEmail().withMessage("Valid email is required.")
 ];
+
+export const changePasswordRules = [
+  body("currentPassword").notEmpty().withMessage("Current password is required."),
+  body("newPassword").isLength({ min: 8 }).withMessage("New password must be at least 8 characters.")
+];
+
+export const twoFactorRules = [
+  body("code").isLength({ min: 6, max: 6 }).isNumeric().withMessage("Valid 6-digit 2FA code is required.")
+];
+

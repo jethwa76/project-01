@@ -4,7 +4,9 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import passport from "passport";
 import { env } from "./config/env.js";
+import { initializePassport } from "./config/passport.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
@@ -22,7 +24,10 @@ import { protect } from "./middleware/auth.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import { apiLimiter, securityMiddleware } from "./middleware/security.js";
 
+initializePassport();
+
 const app = express();
+
 
 app.use(helmet());
 app.use(
@@ -47,7 +52,9 @@ app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(apiLimiter);
+
 securityMiddleware(app);
 
 if (env.nodeEnv === "development") app.use(morgan("dev"));

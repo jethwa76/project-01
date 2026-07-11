@@ -1,55 +1,57 @@
-import { useForm } from "react-hook-form";
-import api from "../../api/client";
-import Button from "../../components/common/Button";
-import { useToast } from "../../context/ToastContext";
+import { useState } from "react";
+import { FaLock, FaShieldAlt, FaLaptop } from "react-icons/fa";
+import ChangePasswordPage from "../auth/ChangePasswordPage";
+import TwoFactorSetup from "../auth/TwoFactorSetup";
+import SessionsPage from "./SessionsPage";
 
 export default function SettingsPage() {
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
-  const { pushToast } = useToast();
+  const [activeTab, setActiveTab] = useState("security");
 
-  const onSubmit = async (values) => {
-    try {
-      await api.patch("/users/change-password", values);
-      pushToast("Password changed successfully.", "success");
-      reset();
-    } catch (err) {
-      console.error("Change password error:", err);
-      pushToast(err.message || "Failed to change password. Double check your current password.", "error");
-    }
-  };
+  const tabs = [
+    { id: "security", label: "Security & Password", icon: FaLock },
+    { id: "2fa", label: "Two-Factor Auth", icon: FaShieldAlt },
+    { id: "sessions", label: "Active Sessions", icon: FaLaptop }
+  ];
 
   return (
-    <section>
-      <h1 className="text-3xl font-bold text-slate-950 dark:text-white">Settings</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid max-w-lg gap-4 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Current Password</label>
-          <input
-            className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
-            type="password"
-            placeholder="Current password"
-            {...register("currentPassword", { required: "Current password is required." })}
-          />
-          {errors.currentPassword && <p className="mt-1 text-xs text-red-500">{errors.currentPassword.message}</p>}
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">New Password</label>
-          <input
-            className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
-            type="password"
-            placeholder="New password"
-            {...register("newPassword", {
-              required: "New password is required.",
-              minLength: { value: 8, message: "Password must be at least 8 characters." }
+    <section className="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Account Settings</h1>
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-8">
+        Manage password, set up two-factor authentication, and monitor active sessions.
+      </p>
+
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Navigation Tabs */}
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto pb-4 md:pb-0 scrollbar-none border-b md:border-b-0 border-slate-100 dark:border-slate-800">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
+                    isActive
+                      ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-950"
+                  }`}
+                >
+                  <Icon className="text-base" />
+                  {tab.label}
+                </button>
+              );
             })}
-          />
-          {errors.newPassword && <p className="mt-1 text-xs text-red-500">{errors.newPassword.message}</p>}
-        </div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Changing password..." : "Change password"}
-        </Button>
-      </form>
+          </nav>
+        </aside>
+
+        {/* Tab Panel Content */}
+        <main className="flex-grow">
+          {activeTab === "security" && <ChangePasswordPage />}
+          {activeTab === "2fa" && <TwoFactorSetup />}
+          {activeTab === "sessions" && <SessionsPage />}
+        </main>
+      </div>
     </section>
   );
 }
-

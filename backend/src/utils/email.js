@@ -35,15 +35,15 @@ async function getTransporter() {
   return transporter;
 }
 
-export async function sendEmail({ to, subject, message }) {
+export async function sendEmail({ to, subject, message, html }) {
   const transport = await getTransporter();
 
   const info = await transport.sendMail({
     from: `"ShowcasePro" <noreply@showcasepro.dev>`,
     to,
     subject,
-    text: message,
-    html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
+    text: message || "",
+    html: html || `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
       <h2 style="color:#2563eb;">${subject}</h2>
       <p style="color:#334155;line-height:1.6;">${message}</p>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
@@ -59,3 +59,4 @@ export async function sendEmail({ to, subject, message }) {
 
   return info;
 }
+

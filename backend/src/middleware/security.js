@@ -1,6 +1,7 @@
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
+import xss from "xss-clean";
 
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -27,4 +28,6 @@ export const contactLimiter = rateLimit({
 export function securityMiddleware(app) {
   app.use(mongoSanitize());
   app.use(hpp());
+  app.use(xss());
 }
+

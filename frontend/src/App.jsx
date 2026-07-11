@@ -9,6 +9,8 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import OAuthCallbackPage from "./pages/auth/OAuthCallbackPage";
 import AdminOverview from "./pages/admin/AdminOverview";
 import ManageResource from "./pages/admin/ManageResource";
 import ProfilePage from "./pages/user/ProfilePage";
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+            <Route path="/auth/oauth-callback" element={<OAuthCallbackPage />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>

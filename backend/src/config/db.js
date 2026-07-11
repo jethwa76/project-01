@@ -7,6 +7,8 @@ import Certificate from "../models/Certificate.js";
 import Testimonial from "../models/Testimonial.js";
 import Blog from "../models/Blog.js";
 import Notification from "../models/Notification.js";
+import Role from "../models/Role.js";
+
 
 async function seedIfEmpty() {
   try {
@@ -125,6 +127,7 @@ export async function connectDatabase() {
       serverSelectionTimeoutMS: 5000
     });
     console.log(`MongoDB connected: ${connection.connection.host}`);
+    await Role.seedDefaults();
     await seedIfEmpty();
   } catch (err) {
     console.warn(`Could not connect to MongoDB at ${env.mongoUri}: ${err.message}`);
@@ -137,6 +140,8 @@ export async function connectDatabase() {
     const connection = await mongoose.connect(uri);
     console.log(`In-memory MongoDB connected: ${connection.connection.host}`);
     console.log("⚠️  Data will not persist after server restart.");
+    await Role.seedDefaults();
     await seedIfEmpty();
   }
 }
+
