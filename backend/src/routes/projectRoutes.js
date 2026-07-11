@@ -3,6 +3,7 @@ import {
   createProject,
   deleteProject,
   getProject,
+  getProjectBySlug,
   getProjects,
   likeProject,
   updateProject
@@ -14,6 +15,7 @@ import { projectRules } from "../validators/resourceValidators.js";
 const router = express.Router();
 
 router.route("/").get(getProjects).post(protect, authorize("admin"), projectRules, validate, createProject);
+router.get("/slug/:slug", getProjectBySlug);
 router.patch("/:id/like", protect, likeProject);
 router
   .route("/:id")

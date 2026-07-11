@@ -16,6 +16,9 @@ import projectRoutes from "./routes/projectRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import { uploadImage } from "./controllers/uploadController.js";
+import { upload } from "./middleware/upload.js";
+import { protect } from "./middleware/auth.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import { apiLimiter, securityMiddleware } from "./middleware/security.js";
 
@@ -64,6 +67,7 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
+app.post("/api/upload", protect, upload.single("image"), uploadImage);
 
 app.use(notFound);
 app.use(errorHandler);

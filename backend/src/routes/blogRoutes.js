@@ -4,6 +4,7 @@ import {
   createBlog,
   deleteBlog,
   getBlog,
+  getBlogBySlug,
   getBlogs,
   toggleBlogReaction,
   updateBlog
@@ -15,6 +16,7 @@ import { blogRules } from "../validators/resourceValidators.js";
 const router = express.Router();
 
 router.route("/").get(getBlogs).post(protect, authorize("admin"), blogRules, validate, createBlog);
+router.get("/slug/:slug", getBlogBySlug);
 router.post("/:id/comments", protect, addComment);
 router.patch("/:id/like", protect, toggleBlogReaction("likes"));
 router.patch("/:id/bookmark", protect, toggleBlogReaction("bookmarks"));

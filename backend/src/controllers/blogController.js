@@ -9,6 +9,14 @@ export const createBlog = createOne(Blog);
 export const updateBlog = updateOne(Blog, ["title", "excerpt", "body", "coverImage", "tags", "status"]);
 export const deleteBlog = deleteOne(Blog);
 
+export const getBlogBySlug = asyncHandler(async (req, res, next) => {
+  const blog = await Blog.findOne({ slug: req.params.slug })
+    .populate("author", "name avatar headline")
+    .populate("comments.user", "name avatar");
+  if (!blog) return next(new ApiError(404, "Blog not found."));
+  res.json({ success: true, data: blog });
+});
+
 export const addComment = asyncHandler(async (req, res, next) => {
   const blog = await Blog.findById(req.params.id);
   if (!blog) return next(new ApiError(404, "Blog not found."));

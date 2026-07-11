@@ -54,7 +54,7 @@ export function ServicesSection() {
 }
 
 export function ProjectsSection({ projects = [] }) {
-  const displayProjects = projects.length > 0 ? projects.slice(0, 3) : mockProjects;
+  const displayProjects = projects.length > 0 ? projects.slice(0, 6) : mockProjects;
 
   return (
     <section id="projects" className="section bg-white/70 dark:bg-slate-950/40">
@@ -64,9 +64,25 @@ export function ProjectsSection({ projects = [] }) {
           {displayProjects.map((project) => (
             <article key={project._id || project.title} className="group rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-soft dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
               <div>
-                <div className="mb-5 h-36 rounded-lg bg-gradient-to-br from-primary to-slate-950" />
+                {project.slug ? (
+                  <a href={`/projects/${project.slug}`}>
+                    {project.image?.url ? (
+                      <img src={project.image.url} alt={project.title} className="mb-5 h-36 w-full rounded-lg object-cover" />
+                    ) : (
+                      <div className="mb-5 h-36 rounded-lg bg-gradient-to-br from-primary to-slate-950" />
+                    )}
+                  </a>
+                ) : (
+                  <div className="mb-5 h-36 rounded-lg bg-gradient-to-br from-primary to-slate-950" />
+                )}
                 <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{project.category}</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h3>
+                {project.slug ? (
+                  <a href={`/projects/${project.slug}`}>
+                    <h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white group-hover:text-primary transition-colors">{project.title}</h3>
+                  </a>
+                ) : (
+                  <h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h3>
+                )}
                 <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-3">{project.summary}</p>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">

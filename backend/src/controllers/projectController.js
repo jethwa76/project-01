@@ -9,6 +9,16 @@ export const createProject = createOne(Project);
 export const updateProject = updateOne(Project, ["title", "summary", "description", "category", "status", "tags", "technologies", "demoUrl", "repoUrl", "featured", "image", "gallery"]);
 export const deleteProject = deleteOne(Project);
 
+export const getProjectBySlug = asyncHandler(async (req, res, next) => {
+  const project = await Project.findOneAndUpdate(
+    { slug: req.params.slug },
+    { $inc: { views: 1 } },
+    { new: true }
+  ).populate("owner", "name avatar headline");
+  if (!project) return next(new ApiError(404, "Project not found."));
+  res.json({ success: true, data: project });
+});
+
 export const likeProject = asyncHandler(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
   if (!project) return next(new ApiError(404, "Project not found."));

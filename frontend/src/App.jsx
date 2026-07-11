@@ -18,7 +18,9 @@ import UserListPage from "./pages/user/UserListPage";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const BlogsPage = lazy(() => import("./pages/BlogsPage"));
+const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 export default function App() {
@@ -28,7 +30,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:slug" element={<ProjectDetailPage />} />
           <Route path="/blogs" element={<BlogsPage />} />
+          <Route path="/blogs/:slug" element={<BlogDetailPage />} />
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

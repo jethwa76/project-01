@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import { FiExternalLink, FiGithub, FiSearch, FiHeart, FiFolderPlus, FiFolderMinus } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { FiExternalLink, FiGithub, FiSearch, FiHeart, FiFolderPlus, FiEye } from "react-icons/fi";
 import Button from "../components/common/Button";
 import PageShell from "../components/layout/PageShell";
 import Loader from "../components/common/Loader";
@@ -107,52 +108,69 @@ export default function ProjectsPage() {
                 const saved = isSaved(project._id);
                 const favorited = isFavorited(project._id);
                 return (
-                  <article key={project._id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
+                  <article key={project._id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between group transition hover:-translate-y-1 hover:shadow-lg">
                     <div>
-                      <div className="mb-5 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-600" />
+                      <Link to={`/projects/${project.slug}`}>
+                        {project.image?.url ? (
+                          <img src={project.image.url} alt={project.title} className="mb-5 h-40 w-full rounded-lg object-cover" />
+                        ) : (
+                          <div className="mb-5 h-40 rounded-lg bg-gradient-to-br from-primary to-slate-900 dark:from-teal-600" />
+                        )}
+                      </Link>
                       <div className="flex justify-between items-start">
                         <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{project.category}</p>
-                        {user && (
-                          <div className="flex gap-1.5">
-                            <button
-                              onClick={() => toggleList(project._id, "savedProjects")}
-                              className={`focus-ring p-1.5 rounded-lg border transition ${
-                                saved
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
-                              }`}
-                              title={saved ? "Remove from saved" : "Save project"}
-                            >
-                              <FiFolderPlus size={15} />
-                            </button>
-                            <button
-                              onClick={() => toggleList(project._id, "favoriteProjects")}
-                              className={`focus-ring p-1.5 rounded-lg border transition ${
-                                favorited
-                                  ? "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-500"
-                                  : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
-                              }`}
-                              title={favorited ? "Remove from favorites" : "Favorite project"}
-                            >
-                              <FiHeart size={15} className={favorited ? "fill-current" : ""} />
-                            </button>
-                          </div>
+                        <div className="flex gap-2 items-center">
+                          {user && (
+                            <div className="flex gap-1.5">
+                              <button
+                                onClick={() => toggleList(project._id, "savedProjects")}
+                                className={`focus-ring p-1.5 rounded-lg border transition ${
+                                  saved
+                                    ? "border-primary bg-primary/10 text-primary"
+                                    : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
+                                }`}
+                                title={saved ? "Remove from saved" : "Save project"}
+                              >
+                                <FiFolderPlus size={15} />
+                              </button>
+                              <button
+                                onClick={() => toggleList(project._id, "favoriteProjects")}
+                                className={`focus-ring p-1.5 rounded-lg border transition ${
+                                  favorited
+                                    ? "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-500"
+                                    : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700"
+                                }`}
+                                title={favorited ? "Remove from favorites" : "Favorite project"}
+                              >
+                                <FiHeart size={15} className={favorited ? "fill-current" : ""} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <Link to={`/projects/${project.slug}`}>
+                        <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-white group-hover:text-primary transition-colors">{project.title}</h2>
+                      </Link>
+                      <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-3">{project.summary}</p>
+                    </div>
+                    <div>
+                      {/* Stats row */}
+                      <div className="mt-4 flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                        <span className="flex items-center gap-1"><FiEye size={12} />{project.views || 0} views</span>
+                        <span className="flex items-center gap-1"><FiHeart size={12} />{project.likes?.length || 0} likes</span>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                        {project.demoUrl && (
+                          <Button variant="outline" to={project.demoUrl} icon={FiExternalLink}>
+                            Demo
+                          </Button>
+                        )}
+                        {project.repoUrl && (
+                          <Button variant="ghost" to={project.repoUrl} icon={FiGithub}>
+                            Code
+                          </Button>
                         )}
                       </div>
-                      <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h2>
-                      <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{project.summary}</p>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-                      {project.demoUrl && (
-                        <Button variant="outline" to={project.demoUrl} icon={FiExternalLink}>
-                          Demo
-                        </Button>
-                      )}
-                      {project.repoUrl && (
-                        <Button variant="ghost" to={project.repoUrl} icon={FiGithub}>
-                          Code
-                        </Button>
-                      )}
                     </div>
                   </article>
                 );
