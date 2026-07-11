@@ -13,6 +13,7 @@ import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import OAuthCallbackPage from "./pages/auth/OAuthCallbackPage";
 import AdminOverview from "./pages/admin/AdminOverview";
 import ManageResource from "./pages/admin/ManageResource";
+import AdminSettings from "./pages/admin/AdminSettings";
 import ProfilePage from "./pages/user/ProfilePage";
 import NotificationsPage from "./pages/user/NotificationsPage";
 import SettingsPage from "./pages/user/SettingsPage";
@@ -59,9 +60,13 @@ export default function App() {
               <Route path="projects" element={<ManageResource type="projects" />} />
               <Route path="blogs" element={<ManageResource type="blogs" />} />
               <Route path="skills" element={<ManageResource type="skills" />} />
+              <Route path="experience" element={<ManageResource type="experience" />} />
+              <Route path="education" element={<ManageResource type="education" />} />
+              <Route path="categories" element={<ManageResource type="categories" />} />
               <Route path="certificates" element={<ManageResource type="certificates" />} />
               <Route path="testimonials" element={<ManageResource type="testimonials" />} />
               <Route path="messages" element={<ManageResource type="messages" />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

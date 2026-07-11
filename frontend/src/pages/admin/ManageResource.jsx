@@ -12,7 +12,10 @@ const resourceMap = {
   certificates: ["title", "issuer", "credentialId"],
   messages: ["name", "email", "status"],
   blogs: ["title", "status", "tags"],
-  testimonials: ["name", "role", "company", "rating"]
+  testimonials: ["name", "role", "company", "rating"],
+  experience: ["company", "position", "type", "current"],
+  education: ["institution", "degree", "cgpa"],
+  categories: ["name", "type", "slug"]
 };
 
 // Initial state for form fields based on resource type
@@ -21,7 +24,7 @@ const getInitialFormState = (type, item = null) => {
     return {
       name: item?.name || "",
       email: item?.email || "",
-      role: item?.role || "user"
+      role: item?.role || "visitor"
     };
   }
   if (type === "projects") {
@@ -81,6 +84,48 @@ const getInitialFormState = (type, item = null) => {
       quote: item?.quote || "",
       rating: item?.rating || 5,
       visible: item?.visible !== undefined ? item.visible : true
+    };
+  }
+  if (type === "experience") {
+    return {
+      company: item?.company || "",
+      position: item?.position || "",
+      startDate: item?.startDate ? new Date(item.startDate).toISOString().split("T")[0] : "",
+      endDate: item?.endDate ? new Date(item.endDate).toISOString().split("T")[0] : "",
+      current: item?.current || false,
+      description: item?.description || "",
+      technologies: item?.technologies?.join(", ") || "",
+      achievements: item?.achievements?.join(", ") || "",
+      location: item?.location || "",
+      type: item?.type || "full-time",
+      order: item?.order || 0,
+      visible: item?.visible !== undefined ? item.visible : true
+    };
+  }
+  if (type === "education") {
+    return {
+      institution: item?.institution || "",
+      degree: item?.degree || "",
+      field: item?.field || "",
+      startDate: item?.startDate ? new Date(item.startDate).toISOString().split("T")[0] : "",
+      endDate: item?.endDate ? new Date(item.endDate).toISOString().split("T")[0] : "",
+      current: item?.current || false,
+      cgpa: item?.cgpa || "",
+      semester: item?.semester || "",
+      subjects: item?.subjects?.join(", ") || "",
+      achievements: item?.achievements?.join(", ") || "",
+      description: item?.description || "",
+      order: item?.order || 0,
+      visible: item?.visible !== undefined ? item.visible : true
+    };
+  }
+  if (type === "categories") {
+    return {
+      name: item?.name || "",
+      type: item?.type || "project",
+      description: item?.description || "",
+      color: item?.color || "#2563eb",
+      order: item?.order || 0
     };
   }
   return {};
@@ -207,6 +252,21 @@ export default function ManageResource({ type }) {
     }
     if (type === "blogs") {
       payload.tags = formData.tags ? formData.tags.split(",").map((t) => t.trim()) : [];
+    }
+    if (type === "experience") {
+      payload.technologies = formData.technologies ? formData.technologies.split(",").map((t) => t.trim()) : [];
+      payload.achievements = formData.achievements ? formData.achievements.split(",").map((t) => t.trim()) : [];
+      payload.order = formData.order ? parseInt(formData.order) : 0;
+    }
+    if (type === "education") {
+      payload.subjects = formData.subjects ? formData.subjects.split(",").map((t) => t.trim()) : [];
+      payload.achievements = formData.achievements ? formData.achievements.split(",").map((t) => t.trim()) : [];
+      payload.cgpa = formData.cgpa ? parseFloat(formData.cgpa) : undefined;
+      payload.semester = formData.semester ? parseInt(formData.semester) : undefined;
+      payload.order = formData.order ? parseInt(formData.order) : 0;
+    }
+    if (type === "categories") {
+      payload.order = formData.order ? parseInt(formData.order) : 0;
     }
 
     try {
@@ -817,6 +877,375 @@ export default function ManageResource({ type }) {
                         />
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Visible</span>
                       </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Experience Form fields */}
+              {type === "experience" && (
+                <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Company</label>
+                      <input
+                        name="company"
+                        value={formData.company || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Position</label>
+                      <input
+                        name="position"
+                        value={formData.position || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Job Type</label>
+                      <select
+                        name="type"
+                        value={formData.type || "full-time"}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      >
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="contract">Contract</option>
+                        <option value="internship">Internship</option>
+                        <option value="freelance">Freelance</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Location</label>
+                      <input
+                        name="location"
+                        value={formData.location || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Start Date</label>
+                      <input
+                        name="startDate"
+                        type="date"
+                        value={formData.startDate || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">End Date</label>
+                      <input
+                        name="endDate"
+                        type="date"
+                        value={formData.endDate || ""}
+                        onChange={handleChange}
+                        disabled={formData.current === true}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      name="current"
+                      type="checkbox"
+                      checked={formData.current || false}
+                      onChange={handleChange}
+                      id="current-experience"
+                      className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-950"
+                    />
+                    <label htmlFor="current-experience" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      Currently Work Here
+                    </label>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description || ""}
+                      onChange={handleChange}
+                      className="mt-1 focus-ring w-full min-h-24 rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Technologies (comma separated)</label>
+                      <input
+                        name="technologies"
+                        value={formData.technologies || ""}
+                        onChange={handleChange}
+                        placeholder="React, Node.js"
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Achievements (comma separated)</label>
+                      <input
+                        name="achievements"
+                        value={formData.achievements || ""}
+                        onChange={handleChange}
+                        placeholder="Created API, Led team"
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Display Order</label>
+                      <input
+                        name="order"
+                        type="number"
+                        value={formData.order || 0}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                    <div className="flex items-end pb-3">
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          name="visible"
+                          type="checkbox"
+                          checked={formData.visible !== false}
+                          onChange={handleChange}
+                          className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-950"
+                        />
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Visible</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Education Form fields */}
+              {type === "education" && (
+                <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Institution</label>
+                      <input
+                        name="institution"
+                        value={formData.institution || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Degree</label>
+                      <input
+                        name="degree"
+                        value={formData.degree || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Field of Study</label>
+                    <input
+                      name="field"
+                      value={formData.field || ""}
+                      onChange={handleChange}
+                      placeholder="e.g. Computer Science"
+                      className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Start Date</label>
+                      <input
+                        name="startDate"
+                        type="date"
+                        value={formData.startDate || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">End Date</label>
+                      <input
+                        name="endDate"
+                        type="date"
+                        value={formData.endDate || ""}
+                        onChange={handleChange}
+                        disabled={formData.current === true}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      name="current"
+                      type="checkbox"
+                      checked={formData.current || false}
+                      onChange={handleChange}
+                      id="current-education"
+                      className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-950"
+                    />
+                    <label htmlFor="current-education" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      Currently Studying Here
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">CGPA / Grade</label>
+                      <input
+                        name="cgpa"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="10"
+                        value={formData.cgpa || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Current Semester</label>
+                      <input
+                        name="semester"
+                        type="number"
+                        value={formData.semester || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description || ""}
+                      onChange={handleChange}
+                      className="mt-1 focus-ring w-full min-h-24 rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Subjects (comma separated)</label>
+                      <input
+                        name="subjects"
+                        value={formData.subjects || ""}
+                        onChange={handleChange}
+                        placeholder="e.g. OS, DBMS, Algorithms"
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Achievements (comma separated)</label>
+                      <input
+                        name="achievements"
+                        value={formData.achievements || ""}
+                        onChange={handleChange}
+                        placeholder="e.g. Gold Medalist, Rank 1"
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Display Order</label>
+                      <input
+                        name="order"
+                        type="number"
+                        value={formData.order || 0}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                    <div className="flex items-end pb-3">
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          name="visible"
+                          type="checkbox"
+                          checked={formData.visible !== false}
+                          onChange={handleChange}
+                          className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-950"
+                        />
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Visible</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Categories Form fields */}
+              {type === "categories" && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Name</label>
+                    <input
+                      name="name"
+                      value={formData.name || ""}
+                      onChange={handleChange}
+                      className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Type</label>
+                      <select
+                        name="type"
+                        value={formData.type || "project"}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      >
+                        <option value="project">Project</option>
+                        <option value="blog">Blog</option>
+                        <option value="skill">Skill</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Display Order</label>
+                      <input
+                        name="order"
+                        type="number"
+                        value={formData.order || 0}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Description</label>
+                    <input
+                      name="description"
+                      value={formData.description || ""}
+                      onChange={handleChange}
+                      className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Color Tag</label>
+                    <div className="mt-1 flex items-center gap-2">
+                      <input
+                        name="color"
+                        type="color"
+                        value={formData.color || "#2563eb"}
+                        onChange={handleChange}
+                        className="h-10 w-12 rounded cursor-pointer bg-transparent"
+                      />
+                      <input
+                        name="color"
+                        value={formData.color || "#2563eb"}
+                        onChange={handleChange}
+                        className="focus-ring flex-1 rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                      />
                     </div>
                   </div>
                 </div>
