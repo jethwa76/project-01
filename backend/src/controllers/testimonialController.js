@@ -4,5 +4,5 @@ import { createOne, deleteOne, getAll, getOne, updateOne } from "./crudControlle
 export const getTestimonials = getAll(Testimonial, ["name", "role", "company", "quote"]);
 export const getTestimonial = getOne(Testimonial);
 export const createTestimonial = createOne(Testimonial);
-export const updateTestimonial = updateOne(Testimonial, ["name", "role", "company", "quote", "rating", "avatar", "visible"]);
+export const updateTestimonial = updateOne(Testimonial, ["name", "role", "company", "quote", "rating", "avatar", "visible", "approved", "position"]);
 export const deleteTestimonial = deleteOne(Testimonial);

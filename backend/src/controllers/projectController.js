@@ -6,7 +6,7 @@ import { createOne, deleteOne, getAll, getOne, updateOne } from "./crudControlle
 export const getProjects = getAll(Project, ["title", "summary", "category", "tags"], "owner");
 export const getProject = getOne(Project, "owner");
 export const createProject = createOne(Project);
-export const updateProject = updateOne(Project, ["title", "summary", "description", "category", "status", "tags", "technologies", "demoUrl", "repoUrl", "featured", "image", "gallery"]);
+export const updateProject = updateOne(Project, ["title", "summary", "description", "category", "status", "tags", "technologies", "demoUrl", "repoUrl", "featured", "image", "gallery", "videoDemo", "completionDate", "architectureDiagram", "dbSchema", "apiDocs", "performanceMetrics"]);
 export const deleteProject = deleteOne(Project);
 
 export const getProjectBySlug = asyncHandler(async (req, res, next) => {
