@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FiEdit3, FiPlus, FiSearch, FiTrash2, FiX } from "react-icons/fi";
+import { FiEdit3, FiEye, FiPlus, FiSearch, FiTrash2, FiX, FiMonitor, FiClock, FiActivity, FiFolder, FiBookOpen, FiUser, FiShield } from "react-icons/fi";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import api from "../../api/client";
@@ -94,6 +94,10 @@ export default function ManageResource({ type }) {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userDetailOpen, setUserDetailOpen] = useState(false);
+  const [userDetailLoading, setUserDetailLoading] = useState(false);
+  const [userDetail, setUserDetail] = useState(null);
 
   const { pushToast } = useToast();
   const fields = resourceMap[type] || resourceMap.projects;
@@ -103,7 +107,9 @@ export default function ManageResource({ type }) {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get(`/${type}`);
+      // For users, use the admin endpoint
+      const endpoint = type === "users" ? "/admin/users" : `/${type}`;
+      const { data } = await api.get(endpoint);
       setRows(data.data || []);
     } catch (err) {
       console.error(err);
@@ -129,16 +135,16 @@ export default function ManageResource({ type }) {
 
   // Open modal for creation
   const handleCreateOpen = () => {
-    if (type === "users") {
-      pushToast("New users must sign up directly.", "info");
-      return;
-    }
     if (type === "messages") {
       pushToast("Messages are submitted via the contact form.", "info");
       return;
     }
     setEditingItem(null);
-    setFormData(getInitialFormState(type));
+    if (type === "users") {
+      setFormData({ name: "", email: "", password: "", role: "visitor" });
+    } else {
+      setFormData(getInitialFormState(type));
+    }
     setIsModalOpen(true);
   };
 
@@ -155,11 +161,27 @@ export default function ManageResource({ type }) {
       return;
     }
     try {
-      await api.delete(`/${type}/${id}`);
+      const endpoint = type === "users" ? `/admin/users/${id}` : `/${type}/${id}`;
+      await api.delete(endpoint);
       pushToast("Record deleted successfully.", "success");
       setRows((prev) => prev.filter((row) => row._id !== id));
     } catch (err) {
       pushToast(err.message || "Failed to delete record.", "error");
+    }
+  };
+
+  // Handle viewing user details (audit logs, sessions, works)
+  const handleViewUserDetails = async (user) => {
+    setSelectedUser(user);
+    setUserDetailOpen(true);
+    setUserDetailLoading(true);
+    try {
+      const { data } = await api.get(`/admin/users/${user._id}`);
+      setUserDetail(data.data);
+    } catch (err) {
+      pushToast(err.message || "Failed to load user details.", "error");
+    } finally {
+      setUserDetailLoading(false);
     }
   };
 
@@ -188,7 +210,19 @@ export default function ManageResource({ type }) {
     }
 
     try {
-      if (editingItem) {
+      if (type === "users" && !editingItem) {
+        // Admin create user
+        const { data } = await api.post("/admin/users", payload);
+        pushToast("User created successfully.", "success");
+        setRows((prev) => [data.data || data, ...prev]);
+      } else if (type === "users" && editingItem) {
+        // Admin edit user role
+        const { data } = await api.patch(`/admin/users/${editingItem._id}/role`, { role: payload.role });
+        pushToast("User role updated.", "success");
+        setRows((prev) =>
+          prev.map((row) => (row._id === editingItem._id ? data.data || data : row))
+        );
+      } else if (editingItem) {
         // Edit record
         const { data } = await api.patch(`/${type}/${editingItem._id}`, payload);
         pushToast("Record updated successfully.", "success");
@@ -218,9 +252,9 @@ export default function ManageResource({ type }) {
             Create, edit, delete, search, filter, and sort records through protected admin APIs.
           </p>
         </div>
-        {type !== "users" && type !== "messages" && (
+        {type !== "messages" && (
           <Button icon={FiPlus} onClick={handleCreateOpen}>
-            Create
+            {type === "users" ? "Add User" : "Create"}
           </Button>
         )}
       </div>
@@ -268,6 +302,16 @@ export default function ManageResource({ type }) {
                       ))}
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
+                          {type === "users" && (
+                            <button
+                              onClick={() => handleViewUserDetails(row)}
+                              className="focus-ring rounded-lg p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/20"
+                              aria-label="View user details"
+                              title="View details, sessions & audit logs"
+                            >
+                              <FiEye />
+                            </button>
+                          )}
                           <button
                             onClick={() => handleEditOpen(row)}
                             className="focus-ring rounded-lg p-2 text-primary hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -321,6 +365,7 @@ export default function ManageResource({ type }) {
                       onChange={handleChange}
                       className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
                       required
+                      disabled={!!editingItem}
                     />
                   </div>
                   <div>
@@ -332,17 +377,34 @@ export default function ManageResource({ type }) {
                       type="email"
                       className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
                       required
+                      disabled={!!editingItem}
                     />
                   </div>
+                  {!editingItem && (
+                    <div>
+                      <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Password</label>
+                      <input
+                        name="password"
+                        type="password"
+                        value={formData.password || ""}
+                        onChange={handleChange}
+                        className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
+                        required
+                        minLength={8}
+                        placeholder="Min. 8 characters"
+                      />
+                    </div>
+                  )}
                   <div>
                     <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Role</label>
                     <select
                       name="role"
-                      value={formData.role || "user"}
+                      value={formData.role || "visitor"}
                       onChange={handleChange}
                       className="mt-1 focus-ring w-full rounded-lg border border-slate-300 px-4 py-2.5 dark:border-slate-700 dark:bg-slate-950 dark:text-white text-sm"
                     >
-                      <option value="user">User</option>
+                      <option value="visitor">Visitor</option>
+                      <option value="editor">Editor</option>
                       <option value="admin">Admin</option>
                     </select>
                   </div>
@@ -772,7 +834,164 @@ export default function ManageResource({ type }) {
           </div>
         </div>
       )}
+      {/* User Detail Monitoring Drawer */}
+      {userDetailOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/50 backdrop-blur-sm" onClick={() => setUserDetailOpen(false)}>
+          <div
+            className="w-full max-w-2xl h-full bg-white dark:bg-slate-900 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white flex items-center gap-2">
+                <FiUser /> User Details
+              </h2>
+              <button
+                onClick={() => setUserDetailOpen(false)}
+                className="focus-ring rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {userDetailLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader label="Loading user details" />
+              </div>
+            ) : userDetail ? (
+              <div className="p-6 space-y-6">
+                {/* Account Summary */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+                  <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <FiShield size={14} /> Account Summary
+                  </h3>
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Name</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{userDetail.user?.name}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Email</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{userDetail.user?.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Role</p>
+                      <span className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                        userDetail.user?.role === "admin" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
+                        userDetail.user?.role === "editor" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
+                        "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      }`}>{userDetail.user?.role}</span>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Provider</p>
+                      <p className="font-semibold text-slate-900 dark:text-white capitalize">{userDetail.user?.provider || "local"}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Email Verified</p>
+                      <span className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                        userDetail.user?.emailVerified ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      }`}>{userDetail.user?.emailVerified ? "Yes" : "No"}</span>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">2FA Enabled</p>
+                      <span className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                        userDetail.user?.twoFactorEnabled ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      }`}>{userDetail.user?.twoFactorEnabled ? "Enabled" : "Disabled"}</span>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 dark:text-slate-400">Joined</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{new Date(userDetail.user?.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active Sessions */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+                  <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <FiMonitor size={14} /> Active Sessions ({userDetail.sessions?.length || 0})
+                  </h3>
+                  <div className="mt-3 space-y-2">
+                    {userDetail.sessions?.length > 0 ? userDetail.sessions.map((session) => (
+                      <div key={session._id} className="rounded-lg bg-slate-50 dark:bg-slate-950 p-3 text-sm flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-slate-800 dark:text-slate-200">{session.browser} on {session.os}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{session.device} · IP: {session.ip} · Last active: {new Date(session.lastActive).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    )) : <p className="text-sm text-slate-500">No active sessions.</p>}
+                  </div>
+                </div>
+
+                {/* Audit Logs */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+                  <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <FiActivity size={14} /> Activity Log ({userDetail.logs?.length || 0})
+                  </h3>
+                  <div className="mt-3 max-h-72 overflow-y-auto space-y-2">
+                    {userDetail.logs?.length > 0 ? userDetail.logs.map((log) => (
+                      <div key={log._id} className="rounded-lg bg-slate-50 dark:bg-slate-950 p-3 text-sm border-l-4 border-l-transparent" style={{
+                        borderLeftColor: log.status === "success" ? "#22c55e" : "#ef4444"
+                      }}>
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {log.action.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                          </span>
+                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                            log.status === "success" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          }`}>{log.status}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          <FiClock className="inline mr-1" size={11} />{new Date(log.timestamp).toLocaleString()}
+                          {log.ip && <> · IP: {log.ip}</>}
+                          {log.browser && log.browser !== "Unknown" && <> · {log.browser}</>}
+                        </p>
+                        {log.details && Object.keys(log.details).length > 0 && (
+                          <p className="text-xs text-slate-400 mt-1 truncate">Details: {JSON.stringify(log.details)}</p>
+                        )}
+                      </div>
+                    )) : <p className="text-sm text-slate-500">No activity logs yet.</p>}
+                  </div>
+                </div>
+
+                {/* User's Works */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+                  <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <FiFolder size={14} /> User's Works
+                  </h3>
+                  <div className="mt-3 space-y-3">
+                    {/* Projects */}
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1"><FiFolder size={12} /> Projects ({userDetail.works?.projects?.length || 0})</p>
+                      <div className="mt-1 space-y-1">
+                        {userDetail.works?.projects?.length > 0 ? userDetail.works.projects.map((p) => (
+                          <div key={p._id} className="rounded-lg bg-slate-50 dark:bg-slate-950 p-3 text-sm">
+                            <p className="font-medium text-slate-800 dark:text-slate-200">{p.title}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{p.status} · {p.category} · Created: {new Date(p.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        )) : <p className="text-xs text-slate-500 pl-1">No projects.</p>}
+                      </div>
+                    </div>
+
+                    {/* Blogs */}
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1"><FiBookOpen size={12} /> Blogs ({userDetail.works?.blogs?.length || 0})</p>
+                      <div className="mt-1 space-y-1">
+                        {userDetail.works?.blogs?.length > 0 ? userDetail.works.blogs.map((b) => (
+                          <div key={b._id} className="rounded-lg bg-slate-50 dark:bg-slate-950 p-3 text-sm">
+                            <p className="font-medium text-slate-800 dark:text-slate-200">{b.title}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{b.status} · Created: {new Date(b.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        )) : <p className="text-xs text-slate-500 pl-1">No blogs.</p>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-6 text-center text-slate-500">Failed to load user details.</div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
-

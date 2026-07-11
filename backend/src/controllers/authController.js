@@ -9,6 +9,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendTokens, signAccessToken } from "../utils/jwt.js";
 import { sendEmail } from "../utils/email.js";
 import { env } from "../config/env.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 // ────────────────────────────── Register ──────────────────────────────
 export const register = asyncHandler(async (req, res) => {
@@ -34,6 +35,7 @@ export const register = asyncHandler(async (req, res) => {
   }
 
   await sendTokens(user, 201, req, res);
+  await logActivity(req, { userId: user._id, email: user.email, action: "register", status: "success" });
 });
 
 // ────────────────────────────── Login ──────────────────────────────
@@ -43,10 +45,12 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email }).select("+password +twoFactorSecret +twoFactorEnabled");
 
   if (!user || user.provider !== "local") {
+    await logActivity(req, { email, action: "login_failed", status: "failed", details: { error: "Invalid email or provider" } });
     return next(new ApiError(401, "Invalid email or password."));
   }
 
   if (!(await user.comparePassword(password))) {
+    await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Incorrect password" } });
     return next(new ApiError(401, "Invalid email or password."));
   }
 
@@ -69,11 +73,13 @@ export const login = asyncHandler(async (req, res, next) => {
     });
 
     if (!verified) {
+      await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Invalid 2FA code" } });
       return next(new ApiError(401, "Invalid two-factor authentication code."));
     }
   }
 
   await sendTokens(user, 200, req, res, !!rememberMe);
+  await logActivity(req, { userId: user._id, email: user.email, action: "login_success", status: "success" });
 });
 
 // ────────────────────────────── Logout ──────────────────────────────
@@ -82,6 +88,10 @@ export const logout = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
   if (refreshToken) {
     const hashedToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
+    const session = await Session.findOne({ refreshToken: hashedToken }).populate("user");
+    if (session && session.user) {
+      await logActivity(req, { userId: session.user._id, email: session.user.email, action: "logout", status: "success" });
+    }
     await Session.deleteOne({ refreshToken: hashedToken });
   }
 
@@ -305,6 +315,7 @@ export const verify2FA = asyncHandler(async (req, res, next) => {
 
   user.twoFactorEnabled = true;
   await user.save({ validateBeforeSave: false });
+  await logActivity(req, { userId: user._id, email: user.email, action: "2fa_enabled", status: "success" });
 
   res.json({ success: true, message: "Two-factor authentication enabled successfully." });
 });
@@ -332,6 +343,7 @@ export const disable2FA = asyncHandler(async (req, res, next) => {
   user.twoFactorEnabled = false;
   user.twoFactorSecret = undefined;
   await user.save({ validateBeforeSave: false });
+  await logActivity(req, { userId: user._id, email: user.email, action: "2fa_disabled", status: "success" });
 
   res.json({ success: true, message: "Two-factor authentication disabled." });
 });
@@ -388,10 +400,10 @@ export const revokeAllSessions = asyncHandler(async (req, res) => {
 
 // ────────────────────────────── OAuth Callbacks ──────────────────────────────
 export const oauthSuccess = asyncHandler(async (req, res) => {
-  // Passport attaches user to req.user after successful OAuth
   const user = req.user;
 
   const { accessToken, refreshToken: rToken } = await (await import("../utils/jwt.js")).createTokenPair(user, req, false);
+  await logActivity(req, { userId: user._id, email: user.email, action: `login_oauth_${user.provider}`, status: "success" });
 
   // Redirect to frontend with tokens as query params (frontend stores them)
   const redirectUrl = new URL(`${env.frontendUrl}/auth/oauth-callback`);

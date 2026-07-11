@@ -1,6 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { QueryFeatures } from "../utils/queryFeatures.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 export const getAll = (Model, searchFields = [], populate = "") =>
   asyncHandler(async (req, res) => {
@@ -33,6 +34,17 @@ export const createOne = (Model) =>
     if (req.user && Model.modelName === "Project") req.body.owner = req.user._id;
     if (req.user && Model.modelName === "Blog") req.body.author = req.user._id;
     const doc = await Model.create(req.body);
+
+    if (req.user) {
+      await logActivity(req, {
+        userId: req.user._id,
+        email: req.user.email,
+        action: `${Model.modelName.toLowerCase()}_created`,
+        status: "success",
+        details: { id: doc._id, name: doc.title || doc.name }
+      });
+    }
+
     res.status(201).json({ success: true, data: doc });
   });
 
@@ -49,6 +61,17 @@ export const updateOne = (Model, allowedFields = []) =>
       runValidators: true
     });
     if (!doc) return next(new ApiError(404, "Resource not found."));
+
+    if (req.user) {
+      await logActivity(req, {
+        userId: req.user._id,
+        email: req.user.email,
+        action: `${Model.modelName.toLowerCase()}_updated`,
+        status: "success",
+        details: { id: doc._id, name: doc.title || doc.name }
+      });
+    }
+
     res.json({ success: true, data: doc });
   });
 
@@ -56,6 +79,17 @@ export const deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
     if (!doc) return next(new ApiError(404, "Resource not found."));
+
+    if (req.user) {
+      await logActivity(req, {
+        userId: req.user._id,
+        email: req.user.email,
+        action: `${Model.modelName.toLowerCase()}_deleted`,
+        status: "success",
+        details: { id: req.params.id, name: doc.title || doc.name }
+      });
+    }
+
     res.status(204).end();
   });
 
