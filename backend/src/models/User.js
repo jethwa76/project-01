@@ -85,6 +85,24 @@ const userSchema = new mongoose.Schema(
     rememberMe: {
       type: Boolean,
       default: false
+    },
+
+    // User status (Suspension/Blocking)
+    isSuspended: {
+      type: Boolean,
+      default: false
+    },
+    suspensionReason: {
+      type: String,
+      default: ""
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false
+    },
+    blockReason: {
+      type: String,
+      default: ""
     }
   },
   { timestamps: true }

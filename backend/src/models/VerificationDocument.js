@@ -5,27 +5,25 @@ const verificationDocumentSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true
+    },
+    documentType: {
+      type: String,
+      enum: ["Student ID", "College ID", "Government ID", "Resume", "Certificate"],
       required: true
     },
-    type: {
-      type: String,
-      enum: ["student_id", "college_id", "govt_id", "resume", "certificate", "other"],
-      required: true
-    },
-    url: {
-      type: String,
-      required: true
-    },
-    publicId: {
-      type: String,
-      required: true
+    file: {
+      url: { type: String, required: true },
+      publicId: { type: String, required: true }
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected", "needs_changes"],
-      default: "pending"
+      enum: ["pending", "approved", "rejected", "changes_requested"],
+      default: "pending",
+      index: true
     },
-    adminRemarks: {
+    remarks: {
       type: String,
       default: ""
     },

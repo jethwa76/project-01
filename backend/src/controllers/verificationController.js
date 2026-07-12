@@ -1,15 +1,24 @@
 import { Readable } from "stream";
 import cloudinary from "../config/cloudinary.js";
 import VerificationDocument from "../models/VerificationDocument.js";
-import User from "../models/User.js";
 import Notification from "../models/Notification.js";
+import User from "../models/User.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { logActivity } from "../utils/activityLogger.js";
 
-// Helper to stream upload to Cloudinary (supports image and PDF auto-detection)
+import { env } from "../config/env.js";
+
+// Helper to upload buffers to Cloudinary supporting PDF, Word, and images
 function uploadStream(fileBuffer, folder) {
   return new Promise((resolve, reject) => {
+    if (!env.cloudinary.apiKey || !env.cloudinary.cloudName) {
+      console.warn("⚠️ Cloudinary is not configured. Falling back to local development mock URL.");
+      return resolve({
+        secure_url: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80",
+        public_id: "mock-local-doc"
+      });
+    }
     const stream = cloudinary.uploader.upload_stream(
       { folder, resource_type: "auto" },
       (error, result) => {
@@ -21,182 +30,143 @@ function uploadStream(fileBuffer, folder) {
   });
 }
 
-// @desc    Upload verification document
-// @route   POST /api/verification/upload
-// @access  Private
-export const uploadDocument = asyncHandler(async (req, res, next) => {
-  if (!req.file) {
-    return next(new ApiError(400, "Please provide a document or image file."));
+// User: Submit verification document
+export const submitVerification = asyncHandler(async (req, res, next) => {
+  const { documentType } = req.body;
+  if (!documentType) {
+    return next(new ApiError(400, "Document type is required."));
   }
 
-  const { type } = req.body;
-  const validTypes = ["student_id", "college_id", "govt_id", "resume", "certificate", "other"];
-  if (!type || !validTypes.includes(type)) {
-    return next(new ApiError(400, `Please provide a valid document type: ${validTypes.join(", ")}`));
+  const allowedTypes = ["Student ID", "College ID", "Government ID", "Resume", "Certificate"];
+  if (!allowedTypes.includes(documentType)) {
+    return next(new ApiError(400, "Invalid document type."));
+  }
+
+  if (!req.file) {
+    return next(new ApiError(400, "Please provide a document file."));
   }
 
   // Upload to Cloudinary
-  const result = await uploadStream(req.file.buffer, "verification-documents");
+  const result = await uploadStream(req.file.buffer, "portfolio-verifications");
 
-  // Create verification document entry
-  const document = await VerificationDocument.create({
+  const verification = await VerificationDocument.create({
     user: req.user._id,
-    type,
-    url: result.secure_url,
-    publicId: result.public_id,
+    documentType,
+    file: {
+      url: result.secure_url,
+      publicId: result.public_id
+    },
     status: "pending"
   });
 
   await logActivity(req, {
     userId: req.user._id,
     email: req.user.email,
-    action: "document_uploaded",
+    action: "verification_submitted",
     status: "success",
-    details: { documentId: document._id, type }
+    details: { docId: verification._id, documentType }
   });
 
   res.status(201).json({
     success: true,
-    data: document
+    data: verification
   });
 });
 
-// @desc    Get logged in user's verification documents
-// @route   GET /api/verification/my-docs
-// @access  Private
-export const getMyDocuments = asyncHandler(async (req, res) => {
-  const documents = await VerificationDocument.find({ user: req.user._id }).sort("-createdAt");
+// User: Get own verification documents
+export const getMyVerifications = asyncHandler(async (req, res) => {
+  const verifications = await VerificationDocument.find({ user: req.user._id }).sort("-createdAt");
   res.json({
     success: true,
-    data: documents
+    data: verifications
   });
 });
 
-// @desc    Delete a verification document
-// @route   DELETE /api/verification/:id
-// @access  Private
-export const deleteDocument = asyncHandler(async (req, res, next) => {
-  const doc = await VerificationDocument.findOne({ _id: req.params.id, user: req.user._id });
-  if (!doc) {
-    return next(new ApiError(404, "Document not found."));
-  }
-
-  // Only allow deleting non-approved documents
-  if (doc.status === "approved") {
-    return next(new ApiError(400, "Approved documents cannot be deleted."));
-  }
-
-  // Delete from Cloudinary
-  // Determine resource type: PDF is raw, images are image
-  const resourceType = doc.url.endsWith(".pdf") ? "raw" : "image";
-  try {
-    await cloudinary.uploader.destroy(doc.publicId, { resource_type: resourceType });
-  } catch (err) {
-    console.error("Cloudinary destroy error:", err);
-  }
-
-  await doc.deleteOne();
-
-  await logActivity(req, {
-    userId: req.user._id,
-    email: req.user.email,
-    action: "document_deleted",
-    status: "success",
-    details: { documentId: doc._id }
-  });
-
-  res.json({
-    success: true,
-    message: "Document deleted successfully."
-  });
-});
-
-// @desc    Get all verification documents (Admin only)
-// @route   GET /api/verification/admin/all
-// @access  Private/Admin
-export const adminGetAllDocuments = asyncHandler(async (req, res) => {
-  const { status, type, page = 1, limit = 10 } = req.query;
-
-  const filter = {};
-  if (status) filter.status = status;
-  if (type) filter.type = type;
-
+// Admin: Get all verifications with searching/filtering/pagination
+export const adminGetVerifications = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
   const skip = (page - 1) * limit;
 
-  const [documents, total] = await Promise.all([
-    VerificationDocument.find(filter)
-      .populate("user", "name email avatar isVerified")
-      .sort("-createdAt")
+  const query = {};
+  if (req.query.status) {
+    query.status = req.query.status;
+  }
+  if (req.query.documentType) {
+    query.documentType = req.query.documentType;
+  }
+
+  // If search is provided, look up users first
+  if (req.query.search) {
+    const matchedUsers = await User.find({
+      $or: [
+        { name: { $regex: req.query.search, $options: "i" } },
+        { email: { $regex: req.query.search, $options: "i" } }
+      ]
+    }).select("_id");
+    query.user = { $in: matchedUsers.map(u => u._id) };
+  }
+
+  const [verifications, total] = await Promise.all([
+    VerificationDocument.find(query)
+      .populate("user", "name email avatar")
+      .populate("reviewedBy", "name email")
       .skip(skip)
-      .limit(Number(limit)),
-    VerificationDocument.countDocuments(filter)
+      .limit(limit)
+      .sort("-createdAt"),
+    VerificationDocument.countDocuments(query)
   ]);
 
   res.json({
     success: true,
     total,
-    page: Number(page),
+    page,
     pages: Math.ceil(total / limit),
-    data: documents
+    data: verifications
   });
 });
 
-// @desc    Review a verification document (Admin only)
-// @route   PATCH /api/verification/admin/review/:id
-// @access  Private/Admin
-export const adminReviewDocument = asyncHandler(async (req, res, next) => {
-  const { status, adminRemarks } = req.body;
-  const validStatuses = ["approved", "rejected", "needs_changes"];
+// Admin: Review verification document (approve, reject, changes_requested)
+export const adminReviewVerification = asyncHandler(async (req, res, next) => {
+  const { status, remarks } = req.body;
 
-  if (!status || !validStatuses.includes(status)) {
-    return next(new ApiError(400, `Please provide a valid review status: ${validStatuses.join(", ")}`));
+  if (!status || !["approved", "rejected", "changes_requested"].includes(status)) {
+    return next(new ApiError(400, "Invalid verification status."));
   }
 
   const doc = await VerificationDocument.findById(req.params.id);
   if (!doc) {
-    return next(new ApiError(404, "Document not found."));
+    return next(new ApiError(404, "Verification document not found."));
   }
 
   doc.status = status;
-  doc.adminRemarks = adminRemarks || "";
+  doc.remarks = remarks || "";
   doc.reviewedBy = req.user._id;
   doc.reviewedAt = new Date();
   await doc.save();
 
-  // If approved, update user's verification status
-  if (status === "approved") {
-    await User.findByIdAndUpdate(doc.user, { isVerified: true });
-  } else {
-    // If not approved, check if they have any other approved document
-    const otherApproved = await VerificationDocument.findOne({
-      user: doc.user,
-      status: "approved",
-      _id: { $ne: doc._id }
-    });
-    if (!otherApproved) {
-      await User.findByIdAndUpdate(doc.user, { isVerified: false });
-    }
-  }
-
-  // Create notifications
-  const userMessage = status === "approved"
-    ? "Your verification document has been approved! Your profile is now verified."
-    : `Your verification document review status: ${status.replace("_", " ")}. Remarks: ${adminRemarks || "None"}`;
-
-  await Notification.create({
-    user: doc.user,
-    type: "security",
-    title: `Verification document ${status}`,
-    body: userMessage,
-    link: "/dashboard/verification"
-  });
-
+  // Log admin action
   await logActivity(req, {
     userId: req.user._id,
     email: req.user.email,
-    action: "document_reviewed",
+    action: `verification_${status}`,
     status: "success",
-    details: { documentId: doc._id, targetUserId: doc.user, reviewStatus: status }
+    details: { targetDocId: doc._id, targetUserId: doc.user, remarks }
+  });
+
+  // Notify the user in-app
+  const statusLabels = {
+    approved: "Approved",
+    rejected: "Rejected",
+    changes_requested: "Changes Requested"
+  };
+
+  await Notification.create({
+    user: doc.user,
+    type: "system",
+    title: `Verification Document ${statusLabels[status]}`,
+    body: `Your verification document (${doc.documentType}) has been reviewed. Status: ${statusLabels[status]}. ${remarks ? `Remarks: "${remarks}"` : ""}`,
+    link: "/dashboard/verification"
   });
 
   res.json({

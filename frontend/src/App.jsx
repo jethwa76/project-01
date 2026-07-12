@@ -18,6 +18,10 @@ import ProfilePage from "./pages/user/ProfilePage";
 import NotificationsPage from "./pages/user/NotificationsPage";
 import SettingsPage from "./pages/user/SettingsPage";
 import UserListPage from "./pages/user/UserListPage";
+import VerificationPage from "./pages/user/VerificationPage";
+import ManageVerifications from "./pages/admin/ManageVerifications";
+import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
+import SessionsPage from "./pages/user/SessionsPage";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
@@ -50,13 +54,17 @@ export default function App() {
               <Route path="saved" element={<UserListPage title="Saved projects" description="Projects saved for deeper review." type="savedProjects" />} />
               <Route path="favorites" element={<UserListPage title="Favorite projects" description="Projects marked as favorites." type="favoriteProjects" />} />
               <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="verification" element={<VerificationPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="change-password" element={<ChangePasswordPage />} />
+              <Route path="sessions" element={<SessionsPage />} />
             </Route>
           </Route>
           <Route element={<ProtectedRoute roles={["admin"]} />}>
             <Route path="/admin" element={<DashboardLayout admin />}>
               <Route index element={<AdminOverview />} />
               <Route path="users" element={<ManageResource type="users" />} />
+              <Route path="verifications" element={<ManageVerifications />} />
               <Route path="projects" element={<ManageResource type="projects" />} />
               <Route path="blogs" element={<ManageResource type="blogs" />} />
               <Route path="skills" element={<ManageResource type="skills" />} />

@@ -27,6 +27,14 @@ export const protect = asyncHandler(async (req, _res, next) => {
       return next(new ApiError(401, "The user belonging to this token no longer exists."));
     }
 
+    if (user.isBlocked) {
+      return next(new ApiError(403, `Access denied. Your account has been blocked. Reason: ${user.blockReason || "No reason specified"}`));
+    }
+
+    if (user.isSuspended) {
+      return next(new ApiError(403, `Access denied. Your account has been suspended. Reason: ${user.suspensionReason || "No reason specified"}`));
+    }
+
     if (user.changedPasswordAfter(decoded.iat)) {
       return next(new ApiError(401, "Password was changed recently. Please log in again."));
     }

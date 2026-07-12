@@ -28,7 +28,7 @@ export function signRefreshToken(userId, rememberMe = false) {
  */
 function parseUserAgent(ua = "") {
   const browser =
-    ua.match(/(?:Chrome|Firefox|Safari|Edge|Opera|MSIE|Trident)[\/\s][\d.]+/)?.[0] || "Unknown";
+    ua.match(/(?:Chrome|Firefox|Safari|Edge|Opera|MSIE|Trident)[/\s][\d.]+/)?.[0] || "Unknown";
   const os =
     ua.match(/(?:Windows NT [\d.]+|Mac OS X [\d_.]+|Linux|Android [\d.]+|iOS [\d.]+)/)?.[0] || "Unknown";
   const device = /Mobile|Android|iPhone|iPad/i.test(ua) ? "Mobile" : "Desktop";

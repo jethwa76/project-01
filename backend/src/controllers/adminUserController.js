@@ -4,6 +4,7 @@ import ActivityLog from "../models/ActivityLog.js";
 import Project from "../models/Project.js";
 import Blog from "../models/Blog.js";
 import PredefinedAdmin from "../models/PredefinedAdmin.js";
+import VerificationDocument from "../models/VerificationDocument.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { logActivity } from "../utils/activityLogger.js";
@@ -78,11 +79,12 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new ApiError(404, "User not found."));
 
-  const [sessions, logs, projects, blogs] = await Promise.all([
+  const [sessions, logs, projects, blogs, verifications] = await Promise.all([
     Session.find({ user: user._id }).sort("-lastActive"),
     ActivityLog.find({ user: user._id }).sort("-timestamp").limit(100),
     Project.find({ owner: user._id }).sort("-createdAt"),
-    Blog.find({ author: user._id }).sort("-createdAt")
+    Blog.find({ author: user._id }).sort("-createdAt"),
+    VerificationDocument.find({ user: user._id }).sort("-createdAt")
   ]);
 
   res.json({
@@ -91,6 +93,7 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
       user,
       sessions,
       logs,
+      verifications,
       works: {
         projects,
         blogs
@@ -152,4 +155,83 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   });
 
   res.json({ success: true, message: "User and all active sessions deleted successfully." });
+});
+
+// Suspend/Unsuspend user
+export const suspendUser = asyncHandler(async (req, res, next) => {
+  const { suspend, reason } = req.body;
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, "User not found."));
+
+  user.isSuspended = !!suspend;
+  user.suspensionReason = suspend ? reason || "No reason specified" : "";
+  await user.save();
+
+  if (suspend) {
+    // Kill all sessions for this user
+    await Session.deleteMany({ user: user._id });
+  }
+
+  await logActivity(req, {
+    userId: req.user._id,
+    email: req.user.email,
+    action: suspend ? "admin_suspend_user" : "admin_unsuspend_user",
+    status: "success",
+    details: { targetUserId: user._id, targetUserEmail: user.email, reason }
+  });
+
+  res.json({ success: true, data: user });
+});
+
+// Block/Unblock user
+export const blockUser = asyncHandler(async (req, res, next) => {
+  const { block, reason } = req.body;
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, "User not found."));
+
+  user.isBlocked = !!block;
+  user.blockReason = block ? reason || "No reason specified" : "";
+  await user.save();
+
+  if (block) {
+    // Kill all sessions for this user
+    await Session.deleteMany({ user: user._id });
+  }
+
+  await logActivity(req, {
+    userId: req.user._id,
+    email: req.user.email,
+    action: block ? "admin_block_user" : "admin_unblock_user",
+    status: "success",
+    details: { targetUserId: user._id, targetUserEmail: user.email, reason }
+  });
+
+  res.json({ success: true, data: user });
+});
+
+// Admin Reset User Password
+export const adminResetPassword = asyncHandler(async (req, res, next) => {
+  const { password } = req.body;
+  if (!password || password.length < 8) {
+    return next(new ApiError(400, "Password must be at least 8 characters."));
+  }
+
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, "User not found."));
+
+  user.password = password;
+  await user.save();
+
+  // Invalidate all active sessions
+  await Session.deleteMany({ user: user._id });
+
+  await logActivity(req, {
+    userId: req.user._id,
+    email: req.user.email,
+    action: "admin_reset_user_password",
+    status: "success",
+    details: { targetUserId: user._id, targetUserEmail: user.email }
+  });
+
+  res.json({ success: true, message: "User password reset successfully." });
 });

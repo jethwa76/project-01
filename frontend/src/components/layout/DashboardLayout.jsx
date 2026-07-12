@@ -1,10 +1,11 @@
-import { FiAward, FiBell, FiFolder, FiGrid, FiMessageCircle, FiSettings, FiStar, FiUser, FiBookOpen, FiMessageSquare, FiBriefcase, FiBook, FiList } from "react-icons/fi";
+import { FiAward, FiBell, FiFolder, FiGrid, FiMessageCircle, FiSettings, FiStar, FiUser, FiBookOpen, FiMessageSquare, FiBriefcase, FiBook, FiList, FiShield } from "react-icons/fi";
 import { NavLink, Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const adminLinks = [
   { label: "Overview", to: "/admin", icon: FiGrid },
   { label: "Users", to: "/admin/users", icon: FiUser },
+  { label: "Verifications", to: "/admin/verifications", icon: FiShield },
   { label: "Projects", to: "/admin/projects", icon: FiFolder },
   { label: "Blogs", to: "/admin/blogs", icon: FiBookOpen },
   { label: "Skills", to: "/admin/skills", icon: FiStar },
@@ -19,6 +20,7 @@ const adminLinks = [
 
 const userLinks = [
   { label: "Profile", to: "/dashboard", icon: FiUser },
+  { label: "Verification", to: "/dashboard/verification", icon: FiShield },
   { label: "Saved", to: "/dashboard/saved", icon: FiFolder },
   { label: "Favorites", to: "/dashboard/favorites", icon: FiStar },
   { label: "Notifications", to: "/dashboard/notifications", icon: FiBell },

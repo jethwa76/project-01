@@ -64,6 +64,17 @@ export const login = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Suspension & Blocking checks
+  if (user.isBlocked) {
+    await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Account is blocked" } });
+    return next(new ApiError(403, `Your account has been blocked. Reason: ${user.blockReason || "No reason specified"}`));
+  }
+
+  if (user.isSuspended) {
+    await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Account is suspended" } });
+    return next(new ApiError(403, `Your account has been suspended. Reason: ${user.suspensionReason || "No reason specified"}`));
+  }
+
   // 2FA check
   if (user.twoFactorEnabled) {
     if (!twoFactorCode) {

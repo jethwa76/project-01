@@ -41,9 +41,12 @@ app.use(helmet());
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like curl, Postman, server-to-server)
-      if (!origin) return callback(null, true);
-      // In development, allow any localhost port
+      // In development, allow requests with no origin (curl, Postman) and any localhost port
+      if (!origin) {
+        if (env.nodeEnv === "development") return callback(null, true);
+        // In production, block requests with no origin header for security
+        return callback(new Error("Not allowed by CORS"));
+      }
       if (env.nodeEnv === "development" && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
         return callback(null, true);
       }
@@ -53,7 +56,11 @@ app.use(
       }
       callback(new Error("Not allowed by CORS"));
     },
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["X-Total-Count"],
+    maxAge: 86400 // Cache preflight for 24 hours
   })
 );
 app.use(compression());
