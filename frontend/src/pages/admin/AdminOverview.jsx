@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   FiAward, FiFolder, FiUsers, FiStar,
   FiMessageSquare, FiMail, FiBookOpen, FiBell,
-  FiDownload, FiActivity, FiList, FiRefreshCw
+  FiDownload, FiActivity, FiList, FiRefreshCw, FiEye
 } from "react-icons/fi";
 import { useApiResource } from "../../hooks/useApiResource";
 import Loader from "../../components/common/Loader";
@@ -12,11 +12,12 @@ import ActivityFeed from "../../components/admin/ActivityFeed";
 // ─── Fallback when the API hasn't responded yet ───────────────────────────────
 const FALLBACK_METRICS = {
   users: 0, projects: 0, skills: 0, certificates: 0,
-  testimonials: 0, messages: 0, blogs: 0, notifications: 0, downloads: 0
+  testimonials: 0, messages: 0, blogs: 0, notifications: 0, downloads: 0, visitors: 0
 };
 
 // ─── Metric card config ───────────────────────────────────────────────────────
 const METRIC_CARDS = [
+  { key: "visitors",     label: "Visitors",     icon: FiEye,          color: "bg-rose-50 dark:bg-rose-950/30",   iconColor: "text-rose-500"   },
   { key: "users",        label: "Users",        icon: FiUsers,        color: "bg-blue-50 dark:bg-blue-950/30",    iconColor: "text-blue-500"   },
   { key: "projects",     label: "Projects",     icon: FiFolder,       color: "bg-violet-50 dark:bg-violet-950/30",iconColor: "text-violet-500" },
   { key: "skills",       label: "Skills",       icon: FiStar,         color: "bg-amber-50 dark:bg-amber-950/30",  iconColor: "text-amber-500"  },
@@ -94,7 +95,12 @@ export default function AdminOverview() {
       </div>
 
       {/* ── Trend Charts ── */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <StatChart
+          title="Visitors — last 7 days"
+          data={trends.visitors || []}
+          color="#f43f5e"
+        />
         <StatChart
           title="Downloads — last 7 days"
           data={trends.downloads}

@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import User from "../models/User.js";
 import Role from "../models/Role.js";
+import PredefinedAdmin from "../models/PredefinedAdmin.js";
 import { env } from "../config/env.js";
 
 export const protect = asyncHandler(async (req, _res, next) => {
@@ -37,12 +38,18 @@ export const protect = asyncHandler(async (req, _res, next) => {
   }
 });
 
-export const authorize = (...roles) => (req, _res, next) => {
+export const authorize = (...roles) => asyncHandler(async (req, _res, next) => {
   if (!roles.includes(req.user.role)) {
     return next(new ApiError(403, "You do not have permission to perform this action."));
   }
+  if (req.user.role === "admin") {
+    const isAllowed = await PredefinedAdmin.findOne({ email: req.user.email });
+    if (!isAllowed) {
+      return next(new ApiError(403, "Access denied. Your email is not registered as an authorized admin."));
+    }
+  }
   next();
-};
+});
 
 export const checkPermission = (permission) => asyncHandler(async (req, _res, next) => {
   if (!req.user) {
@@ -50,6 +57,10 @@ export const checkPermission = (permission) => asyncHandler(async (req, _res, ne
   }
   // Admin gets a bypass
   if (req.user.role === "admin") {
+    const isAllowed = await PredefinedAdmin.findOne({ email: req.user.email });
+    if (!isAllowed) {
+      return next(new ApiError(403, "Access denied. Your email is not registered as an authorized admin."));
+    }
     return next();
   }
 

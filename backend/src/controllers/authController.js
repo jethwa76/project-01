@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
+import PredefinedAdmin from "../models/PredefinedAdmin.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendTokens, signAccessToken } from "../utils/jwt.js";
@@ -52,6 +53,15 @@ export const login = asyncHandler(async (req, res, next) => {
   if (!(await user.comparePassword(password))) {
     await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Incorrect password" } });
     return next(new ApiError(401, "Invalid email or password."));
+  }
+
+  // Predefined admin email check
+  if (user.role === "admin") {
+    const isAllowed = await PredefinedAdmin.findOne({ email: user.email });
+    if (!isAllowed) {
+      await logActivity(req, { userId: user._id, email: user.email, action: "login_failed", status: "failed", details: { error: "Email not in predefined admin list" } });
+      return next(new ApiError(403, "Access denied. Your email is not registered as an authorized admin."));
+    }
   }
 
   // 2FA check
@@ -401,6 +411,14 @@ export const revokeAllSessions = asyncHandler(async (req, res) => {
 // ────────────────────────────── OAuth Callbacks ──────────────────────────────
 export const oauthSuccess = asyncHandler(async (req, res) => {
   const user = req.user;
+
+  if (user.role === "admin") {
+    const isAllowed = await PredefinedAdmin.findOne({ email: user.email });
+    if (!isAllowed) {
+      await logActivity(req, { userId: user._id, email: user.email, action: "login_oauth_failed", status: "failed", details: { error: "Email not in predefined admin list" } });
+      return res.redirect(`${env.frontendUrl}/login?error=unauthorized_admin`);
+    }
+  }
 
   const { accessToken, refreshToken: rToken } = await (await import("../utils/jwt.js")).createTokenPair(user, req, false);
   await logActivity(req, { userId: user._id, email: user.email, action: `login_oauth_${user.provider}`, status: "success" });

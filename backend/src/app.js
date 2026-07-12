@@ -24,11 +24,13 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import tagRoutes from "./routes/tagRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
+import verificationRoutes from "./routes/verificationRoutes.js";
 import { uploadImage } from "./controllers/uploadController.js";
 import { upload } from "./middleware/upload.js";
 import { protect } from "./middleware/auth.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import { apiLimiter, securityMiddleware } from "./middleware/security.js";
+import { trackVisitor } from "./middleware/visitorTracker.js";
 
 initializePassport();
 
@@ -69,6 +71,8 @@ app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "Portfolio Showcase API is healthy." });
 });
 
+app.use(trackVisitor);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/profile", profileRoutes);
@@ -86,9 +90,11 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/downloads", downloadRoutes);
+app.use("/api/verification", verificationRoutes);
 app.post("/api/upload", protect, upload.single("image"), uploadImage);
 
 app.use(notFound);
 app.use(errorHandler);
 
 export default app;
+

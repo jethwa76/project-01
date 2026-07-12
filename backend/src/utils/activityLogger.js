@@ -1,6 +1,6 @@
 import ActivityLog from "../models/ActivityLog.js";
 
-function parseUserAgent(ua = "") {
+export function parseUserAgent(ua = "") {
   const browser =
     ua.match(/(?:Chrome|Firefox|Safari|Edge|Opera|MSIE|Trident)[\/\s][\d.]+/)?.[0] || "Unknown";
   const os =

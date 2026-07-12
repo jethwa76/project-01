@@ -8,11 +8,12 @@ import Blog from "../models/Blog.js";
 import Notification from "../models/Notification.js";
 import Download from "../models/Download.js";
 import ActivityLog from "../models/ActivityLog.js";
+import Visitor from "../models/Visitor.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 // ─── Dashboard overview ──────────────────────────────────────────────────────
 export const dashboardOverview = asyncHandler(async (_req, res) => {
-  const [users, projects, skills, certificates, testimonials, messages, blogs, notifications, downloads] =
+  const [users, projects, skills, certificates, testimonials, messages, blogs, notifications, downloads, visitors] =
     await Promise.all([
       User.countDocuments(),
       Project.countDocuments(),
@@ -22,7 +23,8 @@ export const dashboardOverview = asyncHandler(async (_req, res) => {
       Message.countDocuments(),
       Blog.countDocuments(),
       Notification.countDocuments(),
-      Download.countDocuments()
+      Download.countDocuments(),
+      Visitor.countDocuments()
     ]);
 
   const recentMessages = await Message.find().sort("-createdAt").limit(5);
@@ -53,12 +55,24 @@ export const dashboardOverview = asyncHandler(async (_req, res) => {
     { $sort: { _id: 1 } }
   ]);
 
+  // Last 7 days visitor trend
+  const visitorTrend = await Visitor.aggregate([
+    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ]);
+
   res.json({
     success: true,
-    metrics: { users, projects, skills, certificates, testimonials, messages, blogs, notifications, downloads },
+    metrics: { users, projects, skills, certificates, testimonials, messages, blogs, notifications, downloads, visitors },
     recentMessages,
     popularProjects,
-    trends: { downloads: downloadTrend, users: userTrend }
+    trends: { downloads: downloadTrend, users: userTrend, visitors: visitorTrend }
   });
 });
 

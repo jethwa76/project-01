@@ -3,6 +3,7 @@ import Session from "../models/Session.js";
 import ActivityLog from "../models/ActivityLog.js";
 import Project from "../models/Project.js";
 import Blog from "../models/Blog.js";
+import PredefinedAdmin from "../models/PredefinedAdmin.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { logActivity } from "../utils/activityLogger.js";
@@ -105,12 +106,18 @@ export const updateUserRole = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "Invalid role."));
   }
 
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { role },
-    { new: true, runValidators: true }
-  );
+  const user = await User.findById(req.params.id);
   if (!user) return next(new ApiError(404, "User not found."));
+
+  if (role === "admin") {
+    const isAllowed = await PredefinedAdmin.findOne({ email: user.email });
+    if (!isAllowed) {
+      return next(new ApiError(403, "Access denied. User email is not registered as an authorized admin."));
+    }
+  }
+
+  user.role = role;
+  await user.save();
 
   await logActivity(req, {
     userId: req.user._id,

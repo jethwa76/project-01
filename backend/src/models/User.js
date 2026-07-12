@@ -59,6 +59,13 @@ const userSchema = new mongoose.Schema(
     emailVerificationToken: { type: String, select: false },
     emailVerificationExpires: { type: Date, select: false },
 
+    // Profile verification status
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+
+
     // Password management
     passwordChangedAt: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },

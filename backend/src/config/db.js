@@ -8,6 +8,7 @@ import Testimonial from "../models/Testimonial.js";
 import Blog from "../models/Blog.js";
 import Notification from "../models/Notification.js";
 import Role from "../models/Role.js";
+import PredefinedAdmin from "../models/PredefinedAdmin.js";
 
 
 async function seedIfEmpty() {
@@ -120,6 +121,19 @@ async function seedIfEmpty() {
   }
 }
 
+async function seedPredefinedAdmins() {
+  try {
+    const adminEmail = "admin@example.com";
+    const exists = await PredefinedAdmin.findOne({ email: adminEmail });
+    if (!exists) {
+      await PredefinedAdmin.create({ email: adminEmail });
+      console.log(`✅ Seeded predefined admin email: ${adminEmail}`);
+    }
+  } catch (error) {
+    console.error("Error seeding predefined admin email:", error);
+  }
+}
+
 export async function connectDatabase() {
   mongoose.set("strictQuery", true);
 
@@ -129,6 +143,7 @@ export async function connectDatabase() {
     });
     console.log(`MongoDB connected: ${connection.connection.host}`);
     await Role.seedDefaults();
+    await seedPredefinedAdmins();
     await seedIfEmpty();
   } catch (err) {
     console.warn(`Could not connect to MongoDB at ${env.mongoUri}: ${err.message}`);
@@ -142,6 +157,7 @@ export async function connectDatabase() {
     console.log(`In-memory MongoDB connected: ${connection.connection.host}`);
     console.log("⚠️  Data will not persist after server restart.");
     await Role.seedDefaults();
+    await seedPredefinedAdmins();
     await seedIfEmpty();
   }
 }
